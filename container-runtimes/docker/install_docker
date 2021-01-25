@@ -25,4 +25,27 @@ function main(){
   fi
 }
 
+function docker_centos(){
+  echo "$yellow Removing older versions of Docker installed, if any... $reset"
+  dnf remove --assumeyes docker \
+                         docker-client \
+                         docker-client-latest \
+                         docker-common \
+                         docker-latest \
+                         docker-latest-logrotate \
+                         docker-logrotate \
+                         docker-engine
+  echo "$yellow Setting up the stable repository for Docker CE... $reset"
+  dnf install --assumeyes dnf-plugins-core
+  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  echo "$yellow Installing Docker CE... $reset"
+  dnf update
+  dnf install --assumeyes docker-ce \
+                          docker-ce-cli \
+                          containerd.io
+  echo "$green Installation completed. $reset"
+  docker_start
+}
+
+
 main "$@"
