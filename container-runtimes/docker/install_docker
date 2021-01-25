@@ -83,4 +83,18 @@ function docker_start(){
   docker_logrotate
 }
 
+function docker_logrotate(){
+  echo "$yellow Configuring Docker and automatic log-rotation... $reset"
+  if [[ -e $working_directory/daemon.json ]]
+  then
+    cp "$working_directory"/daemon.json /etc/docker/daemon.json
+    echo "$yellow Restarting Docker & containerd... $reset"
+    systemctl restart docker.service containerd.service
+    echo "$green Configuration completed. $reset"
+  else
+    error "$red The daemon.json file do not exist in the working directory... $reset"
+  fi
+  docker_non_root_user
+}
+
 main "$@"
