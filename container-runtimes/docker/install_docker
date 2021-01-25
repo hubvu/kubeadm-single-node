@@ -75,4 +75,12 @@ function docker_debian(){
   docker_start
 }
 
+function docker_start(){
+  echo "$yellow Configuring Docker & containerd to startup on boot... $reset"
+  systemctl enable docker.service containerd.service
+  echo "$yellow Starting up Docker & containerd... $reset"
+  systemctl start docker.service containerd.service
+  docker_logrotate
+}
+
 main "$@"
