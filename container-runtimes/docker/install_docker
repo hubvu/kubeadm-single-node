@@ -97,4 +97,12 @@ function docker_logrotate(){
   docker_non_root_user
 }
 
+function docker_non_root_user(){
+  echo "$yellow Configuring Docker to be used as a non-root user... $reset"
+  groupadd --force docker
+  usermod --append --groups docker "$SUDO_USER"
+  newgrp docker
+  echo "$green Configuration completed. $reset"
+}
+
 main "$@"
