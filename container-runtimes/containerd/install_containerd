@@ -11,3 +11,18 @@ working_directory=$(pwd)
 function error(){
   echo "[$date_time]: $*" >&2
 }
+
+function main(){
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
+  then
+    containerd_prerequisites
+    containerd_centos
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
+  then
+    containerd_prerequisites
+    containerd_debian
+  else
+    error "$red Please ensure that you are using CentOS or Debian $reset"
+    exit 1
+  fi
+}
