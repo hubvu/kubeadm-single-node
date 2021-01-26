@@ -80,3 +80,14 @@ function containerd_debian(){
   echo "$green Installation completed. $reset"
   containerd_start
 }
+
+function containerd_start(){
+  echo "$yellow Configuring containerd before running the service... $reset"
+  mkdir --parents /etc/containerd
+  containerd config default | tee /etc/containerd/config.toml
+  echo "$yellow Configuring containerd to startup on boot... $reset"
+  systemctl enable containerd.service
+  echo "$yellow Starting up containerd... $reset"
+  systemctl start containerd.service
+  echo "$green Configuration completed. $reset"
+}
