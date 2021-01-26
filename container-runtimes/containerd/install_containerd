@@ -46,3 +46,16 @@ function containerd_prerequisites(){
     exit 1
   fi
 }
+
+function containerd_centos(){
+  echo "$yellow Setting up the Docker CE repository to pull down containerd... $reset"
+  dnf install --assumeyes dnf-plugins-core \
+                          device-mapper-persistent-data \
+                          lvm2
+  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  echo "$yellow Installing containerd... $reset"
+  dnf update
+  dnf install --assumeyes containerd.io
+  echo "$green Installation completed. $reset"
+  containerd_start
+}
