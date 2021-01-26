@@ -91,3 +91,5 @@ function containerd_start(){
   systemctl start containerd.service
   echo "$green Configuration completed. $reset"
 }
+
+main "$@"
