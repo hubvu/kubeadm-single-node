@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+working_directory=$(pwd)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
