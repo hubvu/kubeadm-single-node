@@ -59,3 +59,24 @@ function containerd_centos(){
   echo "$green Installation completed. $reset"
   containerd_start
 }
+
+function containerd_debian(){
+  echo "$yellow Setting up the Docker CE repository... $reset"
+  apt update
+  apt install --yes apt-transport-https \
+                    ca-certificates \
+                    curl \
+                    gnupg-agent \
+                    software-properties-common
+  echo "$yellow Adding Docker’s official GPG key... $reset"
+  curl --fail --silent --show-error --location https://download.docker.com/linux/debian/gpg | apt-key add -
+  echo "$yellow Verifing that the key exists using the fingerprint... $reset"
+  apt-key fingerprint 0EBFCD88
+  echo "$yellow Setting up the stable repository for Docker CE... $reset"
+  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+  echo "$yellow Installing Docker CE... $reset"
+  apt update
+  apt install --yes containerd.io
+  echo "$green Installation completed. $reset"
+  containerd_start
+}
