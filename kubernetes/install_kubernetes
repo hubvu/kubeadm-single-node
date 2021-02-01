@@ -92,3 +92,14 @@ function kubernetes_debian(){
     exit 1
   fi
 }
+
+function kubelet_start(){
+  echo "$yellow Configuring kubelet to startup on boot... $reset"
+  systemctl enable kubelet.service
+  echo "$yellow Starting up kubelet... $reset"
+  systemctl start kubelet.service
+  echo "$green Configuration completed. $reset"
+}
+
+main "$@"
+
