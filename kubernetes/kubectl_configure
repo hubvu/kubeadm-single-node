@@ -21,3 +21,20 @@ function main(){
     exit 1
   fi
 }
+
+function kubectl_configure(){
+  echo "$yellow Configuring kubectl... $reset"
+  if [[ -d $HOME/.kube ]]
+  then
+    rm --recursive "$HOME/.kube"
+    mkdir --parents "$HOME/.kube"
+    cp /etc/kubernetes/admin.conf "$HOME/.kube/config"
+    chown "$SUDO_USER:$SUDO_USER" "$HOME/.kube/config"
+	  echo "$green kubectl configuration completed. $reset"
+  else
+	  mkdir --parents "$HOME/.kube"
+    cp /etc/kubernetes/admin.conf "$HOME/.kube/config"
+	  chown "$SUDO_USER:$SUDO_USER" "$HOME/.kube/config"
+	  echo "$green kubectl configuration completed. $reset"
+  fi
+}
