@@ -46,3 +46,21 @@ function kubernetes_prerequisites(){
     exit 1
   fi
 }
+
+function kubernetes_centos(){
+  echo "$yellow Setting up the Kubernetes repository... $reset"
+  if [[ -e $working_directory/kubernetes.repo ]]
+  then
+    cp "$working_directory"/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+    echo "$yellow Installing kubeadm, kubectl and kubelet... $reset"
+    dnf update
+    dnf install --assumeyes --disableexcludes=kubernetes kubeadm \
+                                                         kubectl \
+                                                         kubelet
+    echo "$green Installation completed. $reset"
+    kubelet_start
+  else
+    error "$red Please ensure that the kubernetes.repo file exists in the working directory first... $reset"
+    exit 1
+  fi
+}
