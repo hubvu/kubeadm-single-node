@@ -27,3 +27,19 @@ function main(){
     exit 1
   fi
 }
+
+function helm_install(){
+  echo "$yellow Pulling down Helm installation script... $reset"
+  curl --fail --silent --show-error --location --output get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  if [[ -e $working_directory/get_helm.sh ]]
+  then
+    echo "$yellow Running the Helm installation script... $reset"
+    chmod 700 get_helm.sh
+    ./get_helm.sh
+  else
+    error "$red Please ensure that the get_helm.sh file exists in the working directory first... $reset"
+    exit 1
+  fi
+}
+
+main "$@"
