@@ -64,3 +64,31 @@ function kubernetes_centos(){
     exit 1
   fi
 }
+
+function kubernetes_debian(){
+  echo "$yellow Setting up the Kubernetes repository... $reset"
+  if [[ -e $working_directory/kubernetes.list ]]
+  then
+    apt update
+    apt install --yes apt-transport-https \
+                      curl
+    echo "$yellow Adding GPG key... $reset"
+    curl --fail --silent --show-error --location https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+    echo "$yellow Setting up the repository... $reset"
+    cp "$working_directory"/kubernetes.list /etc/apt/sources.list.d/kubernetes.list
+    echo "$yellow Installing kubeadm, kubectl and kubelet... $reset"
+    apt update
+    apt install --yes kubeadm \
+                      kubectl \
+                      kubelet
+    echo "$yellow Ensuring kubeadm, kubectl and kubelet from being installed, upgraded or removed... $reset"
+    apt-mark hold kubelet \
+                  kubeadm \
+                  kubectl
+    echo "$green Installation completed. $reset"
+    kubelet_start
+  else
+    error "$red Please ensure that the kubernetes.list file exists in the working directory first... $reset"
+    exit 1
+  fi
+}
