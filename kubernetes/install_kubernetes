@@ -26,3 +26,23 @@ function main(){
     exit 1
   fi
 }
+
+function kubernetes_prerequisites(){
+  echo "$yellow Setting up Kubernetes pre-requisites... $reset"
+  if [[ -e ../container-runtimes/containerd/containerd.conf && -e ../container-runtimes/containerd/99-kubernetes-cri.conf ]]
+  then
+    echo "$yellow Copying containerd.conf file to /etc/modules-load.d/... $reset"
+    cp ../container-runtimes/containerd/containerd.conf /etc/modules-load.d/containerd.conf
+    echo "$yellow Ensuring that required kernel modules are loaded... $reset"
+    modprobe --verbose overlay
+    modprobe --verbose br_netfilter
+    echo "$yellow Copying 99-kubernetes-cri.conf file to /etc/sysctl.d/... $reset"
+    cp ../container-runtimes/containerd/99-kubernetes-cri.conf /etc/sysctl.d/99-kubernetes-cri.conf
+    echo "$yellow Applying the required sysctl parameters... $reset"
+    sysctl --system
+    echo "$green Pre-requisites completed. $reset"
+  else
+    error "$red Please ensure that the containerd.conf & 99-kubernetes-cri.conf files exists in the working directory first... $reset"
+    exit 1
+  fi
+}
