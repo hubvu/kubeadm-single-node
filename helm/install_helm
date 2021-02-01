@@ -3,11 +3,27 @@ set -euo pipefail
 
 reset=$(tput sgr0)
 red=$(tput setaf 1)
-green=$(tput setaf 2)
 yellow=$(tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
 function error(){
   echo "[$date_time]: $*" >&2
+}
+
+function main(){
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
+  then
+    echo "$yellow Ensuring tar is installed... $reset"
+    dnf install --assumeyes tar
+    helm_install
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
+  then
+    echo "$yellow Ensuring tar is installed... $reset"
+    apt install --yes tar
+    helm_install
+  else
+    error "$red Please ensure that you are using CentOS or Debian $reset"
+    exit 1
+  fi
 }
