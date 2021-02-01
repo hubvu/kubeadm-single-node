@@ -38,3 +38,11 @@ function kubectl_configure(){
 	  echo "$green kubectl configuration completed. $reset"
   fi
 }
+
+function kubectl_autocomplete(){
+  echo "$yellow Configuring kubectl autocompletion... $reset"
+  echo "source <(kubectl completion bash)" >> "$HOME"/.bashrc
+  echo "$green Configuration completed. $reset"
+}
+
+main "$@"
