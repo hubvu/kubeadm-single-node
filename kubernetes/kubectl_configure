@@ -10,3 +10,14 @@ date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 function error(){
   echo "[$date_time]: $*" >&2
 }
+
+function main(){
+  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubelet && -e /usr/bin/kubeadm && -e etc/kubernetes/admin.conf ]]
+  then
+    kubectl_configure
+    kubectl_autocomplete
+  else
+    error "$red Please ensure that kubeadm, kubectl and kubelet are installed first... $reset"
+    exit 1
+  fi
+}
