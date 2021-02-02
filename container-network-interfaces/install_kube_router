@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+pod_network_cidr=$(192.168.0.0/16)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+# https://github.com/cloudnativelabs/kube-router/blob/master/docs/kubeadm.md
+function kube_router_init(){
+   echo "$yellow Initialising the control plane and allocating a pod network CIDR - $pod_network_cidr - for Kube Router... $reset"
+   kubeadm init --pod-network-cidr="$pod_network_cidr"
+   echo "$yellow Installing Kube Router... $reset"
+   kubectl apply --record --filename=https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
+   echo "$green Kube Router Installation complete... $reset"
+}
+
+kube_router_init "$@"
