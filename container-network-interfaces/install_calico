@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+pod_network_cidr=$(192.168.0.0/16)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+# https://docs.projectcalico.org/getting-started/kubernetes
+function calico_init(){
+   echo "$yellow Initialising the control plane and allocating a pod network CIDR - $pod_network_cidr - for Calico... $reset"
+   kubeadm init --pod-network-cidr="$pod_network_cidr"
+   echo "$yellow Installing Calico... $reset"
+   kubectl apply --record --filename=https://docs.projectcalico.org/manifests/calico.yaml
+   echo "$green Calico Installation complete... $reset"
+}
+
+calico_init "$@"
