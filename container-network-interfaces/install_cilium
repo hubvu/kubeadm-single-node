@@ -24,9 +24,20 @@ function cilium_init(){
                                       --set hubble.relay.enabled=true \
                                       --set hubble.ui.enabled=true
      echo "$green Cilium installation complete... $reset"
-     cilium_connectivity_checks
+     cilium_connectivity_tests
   else
     error "$red Please ensure that helm is installed first as it is a dependency for installing Cilium... $reset"
     exit 1
   fi
 }
+
+function cilium_connectivity_tests(){
+    sleep 20s
+    echo "$yellow Create a namespace for Cilium Connectivity Tests... $reset"
+    kubectl create namespace cilium-test
+    echo "$yellow Deploying Cilium Connectivity Tests... $reset"
+    kubectl apply --record --namespace=cilium-test --filename=https://raw.githubusercontent.com/cilium/cilium/master/examples/kubernetes/connectivity-check/connectivity-check.yaml
+    echo "$green Cilium Connectivity Tests deployment complete... $reset"
+}
+
+cilium_init "$@"
