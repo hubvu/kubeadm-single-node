@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+# https://docs.cilium.io/en/v1.9/gettingstarted/k8s-install-kubeadm/
+function cilium_init(){
+  if [[ -e /usr/local/bin/helm ]]
+  then
+    echo "$yellow Initialising the control plane... $reset"
+    kubeadm init
+    echo "$yellow Installing Cilium & Enabling Hubble for Cluster-Wide Visibility... $reset"
+    helm repo add cilium https://helm.cilium.io/
+    helm upgrade cilium cilium/cilium --namespace=kube-system \
+                                      --reuse-values \
+                                      --set hubble.listenAddress=":4244" \
+                                      --set hubble.relay.enabled=true \
+                                      --set hubble.ui.enabled=true
+     echo "$green Cilium installation complete... $reset"
+     cilium_connectivity_checks
+  else
+    error "$red Please ensure that helm is installed first as it is a dependency for installing Cilium... $reset"
+    exit 1
+  fi
+}
