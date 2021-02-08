@@ -11,3 +11,16 @@ function error(){
   echo "[$date_time]: $*" >&2
 }
 
+function schedule_pods(){
+  if [[ -e /usr/bin/kubectl ]]
+  then
+    echo "$yellow Removing node-role.kubernetes.io/master taint from any nodes that may have it (not recommended for production environments)... $reset"
+    kubectl taint nodes --all node-role.kubernetes.io/master-
+	echo "$green Nodes are now untainted, you can schedule pods on all of the nodes. $reset"
+  else
+    error "$red Please ensure that, kubectl is installed first... $reset"
+    exit 1
+  fi
+}
+
+schedule_pods "$@"
