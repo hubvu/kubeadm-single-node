@@ -6,13 +6,14 @@ red=$(tput setaf 1)
 green=$(tput setaf 2)
 yellow=$(tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
 function error(){
   echo "[$date_time]: $*" >&2
 }
 
 function main(){
-  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubelet && -e /usr/bin/kubeadm && -e etc/kubernetes/admin.conf ]]
+  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubelet && -e /usr/bin/kubeadm && -e /etc/kubernetes/admin.conf ]]
   then
     kubectl_configure
     kubectl_autocomplete
@@ -26,22 +27,22 @@ function kubectl_configure(){
   echo "$yellow Configuring kubectl... $reset"
   if [[ -d $HOME/.kube ]]
   then
-    rm --recursive "$HOME/.kube"
-    mkdir --parents "$HOME/.kube"
-    cp /etc/kubernetes/admin.conf "$HOME/.kube/config"
-    chown "$SUDO_USER:$SUDO_USER" "$HOME/.kube/config"
+    rm --recursive "$sudo_home"/.kube
+    mkdir --parents "$sudo_home"/.kube
+    cp /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
+    chown "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
 	  echo "$green kubectl configuration completed. $reset"
   else
-	  mkdir --parents "$HOME/.kube"
-    cp /etc/kubernetes/admin.conf "$HOME/.kube/config"
-	  chown "$SUDO_USER:$SUDO_USER" "$HOME/.kube/config"
+	  mkdir --parents "$sudo_home"/.kube
+    cp /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
+	  chown "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
 	  echo "$green kubectl configuration completed. $reset"
   fi
 }
 
 function kubectl_autocomplete(){
   echo "$yellow Configuring kubectl autocompletion... $reset"
-  echo "source <(kubectl completion bash)" >> "$HOME"/.bashrc
+  echo "source <(kubectl completion bash)" >> "$sudo_home"/.bashrc
   echo "$green Configuration completed. $reset"
 }
 
