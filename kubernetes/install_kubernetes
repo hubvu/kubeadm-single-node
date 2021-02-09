@@ -60,7 +60,6 @@ function kubernetes_centos(){
                                                          kubectl \
                                                          kubelet
     echo "$green Installation completed. $reset"
-    kubelet_start
   else
     error "$red Please ensure that the kubernetes.repo file exists in the working directory first... $reset"
     exit 1
@@ -94,7 +93,6 @@ function kubernetes_debian(){
     exit 1
   fi
 }
-
 
 main "$@"
 
