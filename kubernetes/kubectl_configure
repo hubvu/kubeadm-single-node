@@ -44,6 +44,15 @@ function kubectl_autocomplete(){
   echo "$yellow Configuring kubectl autocompletion... $reset"
   echo "source <(kubectl completion bash)" >> "$sudo_home"/.bashrc
   echo "$green Configuration completed. $reset"
+  kubelet_start
+}
+
+function kubelet_start(){
+  echo "$yellow Configuring kubelet to startup on boot... $reset"
+  systemctl enable kubelet.service
+  echo "$yellow Restarting kubelet... $reset"
+  systemctl restart kubelet.service
+  echo "$green Configuration completed. $reset"
 }
 
 main "$@"
