@@ -2,8 +2,8 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
