@@ -78,16 +78,16 @@ function docker_debian(){
 function docker_start(){
   echo "$yellow Configuring Docker & containerd to startup on boot... $reset"
   systemctl enable docker.service containerd.service
-  echo "$yellow Starting up Docker & containerd... $reset"
-  systemctl start docker.service containerd.service
+  echo "$yellow Restarting up Docker & containerd... $reset"
+  systemctl restart docker.service containerd.service
   docker_logrotate
 }
 
 function docker_logrotate(){
   echo "$yellow Configuring Docker and automatic log-rotation... $reset"
-  if [[ -e $working_directory/daemon.json ]]
+  if [[ -e $working_directory/container-runtimes/docker/daemon.json ]]
   then
-    cp "$working_directory"/daemon.json /etc/docker/daemon.json
+    cp "$working_directory"/container-runtimes/docker/daemon.json /etc/docker/daemon.json
     echo "$yellow Restarting Docker & containerd... $reset"
     systemctl restart docker.service containerd.service
     echo "$green Configuration completed. $reset"
@@ -100,8 +100,7 @@ function docker_logrotate(){
 function docker_non_root_user(){
   echo "$yellow Configuring Docker to be used as a non-root user... $reset"
   groupadd --force docker
-  usermod --append --groups docker "$SUDO_USER"
-  newgrp docker
+  usermod --append --groups docker "$USER"
   echo "$green Configuration completed. $reset"
 }
 
