@@ -3,7 +3,7 @@ set -euo pipefail
 
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
-green=$(tput bold && tputsetaf 2)
+green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
