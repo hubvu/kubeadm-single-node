@@ -2,9 +2,9 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tputsetaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
@@ -100,7 +100,7 @@ function docker_logrotate(){
 function docker_non_root_user(){
   echo "$yellow Configuring Docker to be used as a non-root user... $reset"
   groupadd --force docker
-  usermod --append --groups docker "$USER"
+  usermod --append --groups docker "$SUDO_USER"
   echo "$green Configuration completed. $reset"
 }
 
