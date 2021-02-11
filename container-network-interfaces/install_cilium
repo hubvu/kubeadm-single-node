@@ -2,9 +2,12 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+working_directory=$(pwd)
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
 function error(){
   echo "[$date_time]: $*" >&2
@@ -16,10 +19,12 @@ function cilium_init(){
   then
     echo "$yellow Initialising the control plane... $reset"
     kubeadm init
+    source "$working_directory"/kubernetes/kubectl_configure
     echo "$yellow Installing Cilium & Enabling Hubble for Cluster-Wide Visibility... $reset"
     helm repo add cilium https://helm.cilium.io/
-    helm upgrade cilium cilium/cilium --namespace=kube-system \
-                                      --reuse-values \
+    helm repo update
+    sleep 15s
+    helm install cilium cilium/cilium --namespace=kube-system \
                                       --set hubble.listenAddress=":4244" \
                                       --set hubble.relay.enabled=true \
                                       --set hubble.ui.enabled=true
@@ -32,11 +37,10 @@ function cilium_init(){
 }
 
 function cilium_connectivity_tests(){
-    sleep 20s
     echo "$yellow Create a namespace for Cilium Connectivity Tests... $reset"
     kubectl create namespace cilium-test
     echo "$yellow Deploying Cilium Connectivity Tests... $reset"
-    kubectl apply --record --namespace=cilium-test --filename=https://raw.githubusercontent.com/cilium/cilium/master/examples/kubernetes/connectivity-check/connectivity-check.yaml
+    kubectl apply --record --kubeconfig="$sudo_home"/.kube/config --namespace=cilium-test --filename=https://raw.githubusercontent.com/cilium/cilium/master/examples/kubernetes/connectivity-check/connectivity-check.yaml
     echo "$green Cilium Connectivity Tests deployment complete... $reset"
 }
 
