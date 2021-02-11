@@ -6,6 +6,7 @@ green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
 function error(){
   echo "[$date_time]: $*" >&2
@@ -17,7 +18,7 @@ function kube_router_init(){
    kubeadm init --pod-network-cidr=192.168.0.0/16
    source "$working_directory"/kubernetes/kubectl_configure
    echo "$yellow Installing Kube Router... $reset"
-   kubectl apply --record --filename=https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
+   kubectl apply --record --kubeconfig="$sudo_home"/.kube/config --filename=https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
    echo "$green Kube Router Installation complete... $reset"
 }
 
