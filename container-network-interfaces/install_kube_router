@@ -2,6 +2,7 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
+red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
@@ -14,12 +15,18 @@ function error(){
 
 # https://github.com/cloudnativelabs/kube-router/blob/master/docs/kubeadm.md
 function kube_router_init(){
-   echo "$yellow Initialising the control plane and allocating a pod network CIDR - 192.168.0.0/16 - for Kube Router... $reset"
-   kubeadm init --pod-network-cidr=192.168.0.0/16
-   source "$working_directory"/kubernetes/kubectl_configure
-   echo "$yellow Installing Kube Router... $reset"
-   kubectl apply --record --kubeconfig="$sudo_home"/.kube/config --filename=https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
-   echo "$green Kube Router Installation complete... $reset"
+  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
+  then
+    echo "$yellow Initialising the control plane and allocating a pod network CIDR - 192.168.0.0/16 - for Kube Router... $reset"
+    kubeadm init --pod-network-cidr=192.168.0.0/16
+    source "$working_directory"/kubernetes/kubectl_configure
+    echo "$yellow Installing Kube Router... $reset"
+    kubectl apply --record --kubeconfig="$sudo_home"/.kube/config --filename=https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
+    echo "$green Kube Router Installation complete... $reset"
+  else
+    error "$red Please ensure that kubeadm and kubectl are installed first... $reset"
+    exit 1
+  fi
 }
 
 kube_router_init "$@"
