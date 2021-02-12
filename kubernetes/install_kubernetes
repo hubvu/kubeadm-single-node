@@ -52,8 +52,9 @@ function kubernetes_centos(){
   if [[ -e $working_directory/kubernetes/kubernetes.repo ]]
   then
     cp "$working_directory"/kubernetes/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
-    echo "$yellow Installing bash auto-completion... $reset"
-    dnf install --assumeyes bash-completion
+    echo "$yellow Installing dependencies... $reset"
+    dnf install --assumeyes bash-completion \
+                            pwgen
     echo "$yellow Installing kubeadm, kubectl and kubelet... $reset"
     dnf update
     dnf install --assumeyes --disableexcludes=kubernetes kubeadm \
@@ -71,9 +72,11 @@ function kubernetes_debian(){
   if [[ -e $working_directory/kubernetes/kubernetes.list ]]
   then
     apt update
+    echo "$yellow Installing dependencies... $reset"
     apt install --yes apt-transport-https \
                       curl \
-                      bash-completion
+                      bash-completion \
+                      pwgen
     echo "$yellow Adding GPG key... $reset"
     curl --fail --silent --show-error --location https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
     echo "$yellow Setting up the repository... $reset"
