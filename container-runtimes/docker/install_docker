@@ -20,7 +20,7 @@ function main(){
   then
     docker_debian
   else
-    error "$red Please ensure that you are using CentOS or Debian $reset"
+    error "$red Please ensure that you are using CentOS or Debian... $reset"
     exit 1
   fi
 }
@@ -35,15 +35,15 @@ function docker_centos(){
                          docker-latest-logrotate \
                          docker-logrotate \
                          docker-engine
-  echo "$yellow Setting up the stable repository for Docker CE... $reset"
+  echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
   dnf install --assumeyes dnf-plugins-core
   dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  echo "$yellow Installing Docker CE... $reset"
+  echo "$yellow Installing Docker CE [Community Edition]... $reset"
   dnf update
   dnf install --assumeyes docker-ce \
                           docker-ce-cli \
                           containerd.io
-  echo "$green Installation completed. $reset"
+  echo "$green Docker CE [Community Edition] installation completed... $reset"
   docker_start
 }
 
@@ -53,7 +53,7 @@ function docker_debian(){
                    docker-engine \
                    docker.io \
                    runc
-  echo "$yellow Setting up the Docker CE repository... $reset"
+  echo "$yellow Setting up the Docker CE [Community Edition] repository... $reset"
   apt update
   apt install --yes apt-transport-https \
                     ca-certificates \
@@ -64,21 +64,21 @@ function docker_debian(){
   curl --fail --silent --show-error --location https://download.docker.com/linux/debian/gpg | apt-key add -
   echo "$yellow Verifing that the key exists using the fingerprint... $reset"
   apt-key fingerprint 0EBFCD88
-  echo "$yellow Setting up the stable repository for Docker... $reset"
+  echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
   add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-  echo "$yellow Installing Docker CE... $reset"
+  echo "$yellow Installing Docker CE [Community Edition]... $reset"
   apt update
   apt install --yes docker-ce \
                     docker-ce-cli \
                     containerd.io
-  echo "$green Installation completed. $reset"
+  echo "$green Docker CE [Community Edition] installation completed... $reset"
   docker_start
 }
 
 function docker_start(){
-  echo "$yellow Configuring Docker & containerd to startup on boot... $reset"
+  echo "$yellow Configuring Docker & Containerd to startup on boot... $reset"
   systemctl enable docker.service containerd.service
-  echo "$yellow Restarting up Docker & containerd... $reset"
+  echo "$yellow Restarting up Docker & Containerd... $reset"
   systemctl restart docker.service containerd.service
   docker_logrotate
 }
@@ -88,11 +88,11 @@ function docker_logrotate(){
   if [[ -e $working_directory/container-runtimes/docker/daemon.json ]]
   then
     cp "$working_directory"/container-runtimes/docker/daemon.json /etc/docker/daemon.json
-    echo "$yellow Restarting Docker & containerd... $reset"
+    echo "$yellow Restarting Docker & Containerd... $reset"
     systemctl restart docker.service containerd.service
-    echo "$green Configuration completed. $reset"
+    echo "$green Docker and automatic log-rotation configuration completed... $reset"
   else
-    error "$red The daemon.json file do not exist in the working directory... $reset"
+    error "$red The daemon.json file does not exist in the working directory... $reset"
   fi
   docker_non_root_user
 }
@@ -101,7 +101,7 @@ function docker_non_root_user(){
   echo "$yellow Configuring Docker to be used as a non-root user... $reset"
   groupadd --force docker
   usermod --append --groups docker "$SUDO_USER"
-  echo "$green Configuration completed. $reset"
+  echo "$green Docker non-root user configuration completed... $reset"
 }
 
 main "$@"
