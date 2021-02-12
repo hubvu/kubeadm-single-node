@@ -2,9 +2,9 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
@@ -16,10 +16,13 @@ function schedule_pods(){
   if [[ -e /usr/bin/kubectl ]]
   then
     echo "$yellow Removing node-role.kubernetes.io/master taint from any nodes that may have it (not recommended for production environments)... $reset"
-    kubectl --kubeconfig="$sudo_home"/.kube/config taint nodes --all node-role.kubernetes.io/master-
-	echo "$green Nodes are now untainted, you can schedule pods on all of the nodes. $reset"
+    kubectl taint nodes \
+                  --kubeconfig="$sudo_home"/.kube/config \
+                  --all \
+                  node-role.kubernetes.io/master-
+	  echo "$green Nodes are now untainted, it should be now possible to schedule pods on all of the nodes... $reset"
   else
-    error "$red Please ensure that, kubectl is installed first... $reset"
+    error "$red Please ensure that kubectl is installed first... $reset"
     exit 1
   fi
 }
