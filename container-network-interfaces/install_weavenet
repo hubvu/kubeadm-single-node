@@ -26,6 +26,7 @@ function weavenet_init(){
     touch /var/lib/weave/weave-passwd
     echo "$random_generated_password" > /var/lib/weave/weave-passwd
     echo "$yellow Creating a generic Kubernetes secret using the password-secret generated in the previous step... $reset"
+    sleep 3s
     kubectl create secret --kubeconfig="$sudo_home"/.kube/config \
                           --namespace=kube-system generic weave-passwd \
                           --from-file=/var/lib/weave/weave-passwd

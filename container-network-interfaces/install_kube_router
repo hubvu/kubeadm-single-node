@@ -21,6 +21,7 @@ function kube_router_init(){
     kubeadm init --pod-network-cidr=192.168.0.0/16
     source "$working_directory"/kubernetes/kubectl_configure
     echo "$yellow Installing Kube Router... $reset"
+    sleep 3s
     kubectl apply --record \
                   --kubeconfig="$sudo_home"/.kube/config \
                   --filename=https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/kubeadm-kuberouter.yaml
