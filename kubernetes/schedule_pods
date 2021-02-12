@@ -15,7 +15,7 @@ function error(){
 function schedule_pods(){
   if [[ -e /usr/bin/kubectl ]]
   then
-    echo "$yellow Removing node-role.kubernetes.io/master taint from any nodes that may have it (not recommended for production environments)... $reset"
+    echo "$yellow Removing node-role.kubernetes.io/master taint from any nodes that may have it $red(not recommended for production environments)$yellow... $reset"
     kubectl taint nodes \
                   --kubeconfig="$sudo_home"/.kube/config \
                   --all \
