@@ -20,7 +20,7 @@ function cilium_init(){
     echo "$yellow Initialising the control plane... $reset"
     kubeadm init
     source "$working_directory"/kubernetes/kubectl_configure
-    echo "$yellow Installing Cilium & Enabling Hubble for Cluster-Wide Visibility... $reset"
+    echo "$yellow Installing Cilium & enabling Hubble for cluster-wide visibility... $reset"
     helm repo add cilium https://helm.cilium.io/
     helm repo update
     sleep 15s
@@ -31,17 +31,20 @@ function cilium_init(){
      echo "$green Cilium installation complete... $reset"
      cilium_connectivity_tests
   else
-    error "$red Please ensure that helm is installed first as it is a dependency for installing Cilium... $reset"
+    error "$red Please ensure that Helm is installed first as it is a dependency for installing Cilium... $reset"
     exit 1
   fi
 }
 
 function cilium_connectivity_tests(){
-    echo "$yellow Create a namespace for Cilium Connectivity Tests... $reset"
+    echo "$yellow Create a namespace for Cilium connectivity tests... $reset"
     kubectl create namespace cilium-test
-    echo "$yellow Deploying Cilium Connectivity Tests... $reset"
-    kubectl apply --record --kubeconfig="$sudo_home"/.kube/config --namespace=cilium-test --filename=https://raw.githubusercontent.com/cilium/cilium/master/examples/kubernetes/connectivity-check/connectivity-check.yaml
-    echo "$green Cilium Connectivity Tests deployment complete... $reset"
+    echo "$yellow Deploying Cilium connectivity tests... $reset"
+    kubectl apply --record \
+                  --kubeconfig="$sudo_home"/.kube/config \
+                  --namespace=cilium-test \
+                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/examples/kubernetes/connectivity-check/connectivity-check.yaml
+    echo "$green Cilium connectivity tests deployment complete... $reset"
 }
 
 cilium_init "$@"
