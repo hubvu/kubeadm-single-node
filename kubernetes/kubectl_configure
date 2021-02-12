@@ -2,9 +2,9 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
@@ -27,15 +27,15 @@ function kubectl_configure(){
   echo "$yellow Configuring kubectl... $reset"
   if [[ -d $HOME/.kube ]]
   then
-    rm --recursive "$sudo_home"/.kube
-    mkdir --parents "$sudo_home"/.kube
-    cp /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
-    chown "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
+    rm --recursive --force --verbose "$sudo_home"/.kube
+    mkdir --parents --verbose "$sudo_home"/.kube
+    cp --verbose /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
+    chown --verbose "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
 	  echo "$green kubectl configuration completed. $reset"
   else
-	  mkdir --parents "$sudo_home"/.kube
-    cp /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
-	  chown "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
+	  mkdir --parents --verbose "$sudo_home"/.kube
+    cp --verbose /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
+	  chown --verbose "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
 	  echo "$green kubectl configuration completed. $reset"
   fi
 }
