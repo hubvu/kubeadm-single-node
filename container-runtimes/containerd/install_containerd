@@ -83,7 +83,7 @@ function containerd_debian(){
 
 function containerd_start(){
   echo "$yellow Configuring Containerd before running the service... $reset"
-  mkdir --parents /etc/containerd
+  mkdir --parents --verbose /etc/containerd
   containerd config default | tee /etc/containerd/config.toml
   echo "$yellow Configuring Containerd to startup on boot... $reset"
   systemctl enable containerd.service
