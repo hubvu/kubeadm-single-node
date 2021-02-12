@@ -2,9 +2,9 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
@@ -29,15 +29,15 @@ function main(){
 
 function containerd_prerequisites(){
   echo "$yellow Setting up containerd pre-requisites... $reset"
-  if [[ -e $working_directory/containerd.conf && -e $working_directory/99-kubernetes-cri.conf ]]
+  if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]
   then
     echo "$yellow Copying containerd.conf file to /etc/modules-load.d/... $reset"
-    cp "$working_directory"/containerd.conf /etc/modules-load.d/containerd.conf
+    cp "$working_directory"/container-runtimes/containerd/containerd.conf /etc/modules-load.d/containerd.conf
     echo "$yellow Ensuring that required kernel modules are loaded... $reset"
     modprobe --verbose overlay
     modprobe --verbose br_netfilter
     echo "$yellow Copying 99-kubernetes-cri.conf file to /etc/sysctl.d/... $reset"
-    cp "$working_directory"/99-kubernetes-cri.conf /etc/sysctl.d/99-kubernetes-cri.conf
+    cp "$working_directory"/container-runtimes/containerd/99-kubernetes-cri.conf /etc/sysctl.d/99-kubernetes-cri.conf
     echo "$yellow Applying the required sysctl parameters... $reset"
     sysctl --system
     echo "$green Prerequisites completed. $reset"
@@ -87,8 +87,8 @@ function containerd_start(){
   containerd config default | tee /etc/containerd/config.toml
   echo "$yellow Configuring containerd to startup on boot... $reset"
   systemctl enable containerd.service
-  echo "$yellow Starting up containerd... $reset"
-  systemctl start containerd.service
+  echo "$yellow Restarting containerd... $reset"
+  systemctl restart containerd.service
   echo "$green Configuration completed. $reset"
 }
 
