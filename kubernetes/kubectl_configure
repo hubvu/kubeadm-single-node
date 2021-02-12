@@ -31,19 +31,19 @@ function kubectl_configure(){
     mkdir --parents --verbose "$sudo_home"/.kube
     cp --verbose /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
     chown --verbose "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
-	  echo "$green kubectl configuration completed. $reset"
+	  echo "$green Kubectl configuration completed... $reset"
   else
 	  mkdir --parents --verbose "$sudo_home"/.kube
     cp --verbose /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
 	  chown --verbose "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
-	  echo "$green kubectl configuration completed. $reset"
+	  echo "$green Kubectl configuration completed... $reset"
   fi
 }
 
 function kubectl_autocomplete(){
-  echo "$yellow Configuring kubectl autocompletion... $reset"
+  echo "$yellow Configuring kubectl auto-completion... $reset"
   echo "source <(kubectl completion bash)" >> "$sudo_home"/.bashrc
-  echo "$green Configuration completed. $reset"
+  echo "$green Kubectl auto-completion onfiguration completed... $reset"
   kubelet_start
 }
 
@@ -52,7 +52,7 @@ function kubelet_start(){
   systemctl enable kubelet.service
   echo "$yellow Restarting kubelet... $reset"
   systemctl restart kubelet.service
-  echo "$green Configuration completed. $reset"
+  echo "$green Kubelet configuration completed.... $reset"
 }
 
 main "$@"
