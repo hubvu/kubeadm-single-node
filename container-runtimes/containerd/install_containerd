@@ -22,25 +22,25 @@ function main(){
     containerd_prerequisites
     containerd_debian
   else
-    error "$red Please ensure that you are using CentOS or Debian $reset"
+    error "$red Please ensure that you are using CentOS or Debian... $reset"
     exit 1
   fi
 }
 
 function containerd_prerequisites(){
-  echo "$yellow Setting up containerd pre-requisites... $reset"
+  echo "$yellow Setting up Containerd pre-requisites... $reset"
   if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]
   then
-    echo "$yellow Copying containerd.conf file to /etc/modules-load.d/... $reset"
+    echo "$yellow Copying the containerd.conf file to /etc/modules-load.d/... $reset"
     cp "$working_directory"/container-runtimes/containerd/containerd.conf /etc/modules-load.d/containerd.conf
-    echo "$yellow Ensuring that required kernel modules are loaded... $reset"
+    echo "$yellow Ensuring that the required kernel modules are loaded... $reset"
     modprobe --verbose overlay
     modprobe --verbose br_netfilter
     echo "$yellow Copying 99-kubernetes-cri.conf file to /etc/sysctl.d/... $reset"
     cp "$working_directory"/container-runtimes/containerd/99-kubernetes-cri.conf /etc/sysctl.d/99-kubernetes-cri.conf
     echo "$yellow Applying the required sysctl parameters... $reset"
     sysctl --system
-    echo "$green Prerequisites completed. $reset"
+    echo "$green Containerd pre-requisites completed... $reset"
   else
     error "$red Please ensure that the containerd.conf & 99-kubernetes-cri.conf files exists in the working directory first... $reset"
     exit 1
@@ -48,20 +48,20 @@ function containerd_prerequisites(){
 }
 
 function containerd_centos(){
-  echo "$yellow Setting up the Docker CE repository to pull down containerd... $reset"
+  echo "$yellow Setting up the Docker CE [Community Edition] repository to pull down Containerd... $reset"
   dnf install --assumeyes dnf-plugins-core \
                           device-mapper-persistent-data \
                           lvm2
   dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  echo "$yellow Installing containerd... $reset"
+  echo "$yellow Installing Containerd... $reset"
   dnf update
   dnf install --assumeyes containerd.io
-  echo "$green Installation completed. $reset"
+  echo "$green Containerd installation completed... $reset"
   containerd_start
 }
 
 function containerd_debian(){
-  echo "$yellow Setting up the Docker CE repository... $reset"
+  echo "$yellow Setting up the DDocker CE [Community Edition] repository... $reset"
   apt update
   apt install --yes apt-transport-https \
                     ca-certificates \
@@ -72,24 +72,24 @@ function containerd_debian(){
   curl --fail --silent --show-error --location https://download.docker.com/linux/debian/gpg | apt-key add -
   echo "$yellow Verifing that the key exists using the fingerprint... $reset"
   apt-key fingerprint 0EBFCD88
-  echo "$yellow Setting up the stable repository for Docker CE... $reset"
+  echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
   add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-  echo "$yellow Installing Docker CE... $reset"
+  echo "$yellow Installing Docker CE [Community Edition]... $reset"
   apt update
   apt install --yes containerd.io
-  echo "$green Installation completed. $reset"
+  echo "$green Docker CE [Community Edition] installation completed... $reset"
   containerd_start
 }
 
 function containerd_start(){
-  echo "$yellow Configuring containerd before running the service... $reset"
+  echo "$yellow Configuring Containerd before running the service... $reset"
   mkdir --parents /etc/containerd
   containerd config default | tee /etc/containerd/config.toml
-  echo "$yellow Configuring containerd to startup on boot... $reset"
+  echo "$yellow Configuring Containerd to startup on boot... $reset"
   systemctl enable containerd.service
-  echo "$yellow Restarting containerd... $reset"
+  echo "$yellow Restarting Containerd... $reset"
   systemctl restart containerd.service
-  echo "$green Configuration completed. $reset"
+  echo "$green Containerd configuration completed... $reset"
 }
 
 main "$@"
