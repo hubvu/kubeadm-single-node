@@ -14,28 +14,6 @@ function error(){
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/pwgen ]]
-  then
-    weavenet_init
-  else  
-    if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-    then
-      echo "$yellow Ensuring pwgen is installed... $reset"
-      dnf install --assumeyes pwgen
-      weavenet_init
-    elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-    then
-      echo "$yellow Ensuring pwgen is installed... $reset"
-      apt install --yes pwgen
-      weavenet_init
-    else
-      error "$red Please ensure that you are using CentOS or Debian first $reset"
-      exit 1
-    fi
-  fi
-}
-
 # https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#-changing-configuration-options
 function weavenet_init(){
   if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
@@ -60,4 +38,4 @@ function weavenet_init(){
   fi
 }
 
-main "$@"
+weavenet_init "$@"
