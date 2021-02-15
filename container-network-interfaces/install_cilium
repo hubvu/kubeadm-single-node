@@ -13,25 +13,26 @@ function error(){
   echo "[$date_time]: $*" >&2
 }
 
-# https://docs.cilium.io/en/v1.9/gettingstarted/k8s-install-kubeadm/
+# https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/
 function cilium_init(){
-  if [[ -e /usr/local/bin/helm ]]
+  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
   then
     echo "$yellow Initialising the control plane... $reset"
     kubeadm init
     source "$working_directory"/kubernetes/kubectl_configure
-    echo "$yellow Installing Cilium & enabling Hubble for cluster-wide visibility... $reset"
-    helm repo add cilium https://helm.cilium.io/
-    helm repo update
-    sleep 15s
-    helm install cilium cilium/cilium --namespace=kube-system \
-                                      --set hubble.listenAddress=":4244" \
-                                      --set hubble.relay.enabled=true \
-                                      --set hubble.ui.enabled=true
+    echo "$yellow Installing Cilium... $reset"
+    sleep 3s
+    kubectl apply --record \
+                  --kubeconfig="$sudo_home"/.kube/config \
+                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/install/kubernetes/quick-install.yaml
+    echo "$yellow Enabling Hubble for cluster-wide visibility... $reset"
+    kubectl apply --record \
+                  --kubeconfig="$sudo_home"/.kube/config \
+                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/install/kubernetes/quick-hubble-install.yaml
      echo "$green Cilium installation complete... $reset"
      cilium_connectivity_tests
   else
-    error "$red Please ensure that Helm is installed first as it is a dependency for installing Cilium... $reset"
+    error "$red Please ensure that kubeadm and kubectl are installed first... $reset"
     exit 1
   fi
 }
