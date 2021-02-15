@@ -69,7 +69,10 @@ function containerd_debian(){
                     gnupg-agent \
                     software-properties-common
   echo "$yellow Adding Docker’s official GPG key... $reset"
-  curl --fail --silent --show-error --location https://download.docker.com/linux/debian/gpg | apt-key add -
+  curl --fail \
+       --silent \
+       --show-error \
+       --location https://download.docker.com/linux/debian/gpg | apt-key add -
   echo "$yellow Verifing that the key exists using the fingerprint... $reset"
   apt-key fingerprint 0EBFCD88
   echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
