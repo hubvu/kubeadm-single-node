@@ -2,8 +2,9 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-red=$(tput setaf 1)
-yellow=$(tput setaf 3)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
@@ -14,27 +15,32 @@ function error(){
 function main(){
   if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
   then
-    echo "$yellow Ensuring tar is installed... $reset"
+    echo "$yellow Ensure tar is installed... $reset"
     dnf install --assumeyes tar
     helm_install
   elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
   then
-    echo "$yellow Ensuring tar is installed... $reset"
+    echo "$yellow Ensure tar is installed... $reset"
     apt install --yes tar
     helm_install
   else
-    error "$red Please ensure that you are using CentOS or Debian $reset"
+    error "$red Please ensure that you are using CentOS or Debian... $reset"
     exit 1
   fi
 }
 
 function helm_install(){
-  echo "$yellow Pulling down Helm installation script... $reset"
-  curl --fail --silent --show-error --location --output "$working_directory"/helm/get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+  echo "$yellow Pulling down the Helm installation script... $reset"
+  curl --fail \
+       --silent \
+       --show-error \
+       --location \
+       --output "$working_directory"/helm/get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
   if [[ -e $working_directory/helm/get_helm.sh ]]
   then
     echo "$yellow Running the Helm installation script... $reset"
     source "$working_directory"/helm/get_helm.sh
+    echo "$green Helm installation completed... $reset"
   else
     error "$red Please ensure that the get_helm.sh file exists in the working directory first... $reset"
     exit 1
