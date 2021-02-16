@@ -2,12 +2,98 @@
 set -euo pipefail
 
 reset=$(tput sgr0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
 function error(){
   echo "[$date_time]: $*" >&2
 }
+
+function main(){
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
+  then
+    install_base
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
+  then
+    install_base
+  else
+    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    exit 1
+  fi
+}
+
+function install_base(){
+  PS3="$yellow Choose a container runtime for the cluster [Number]: $reset"
+  options=("Docker" "Containerd" "Quit")
+
+  select container_runtime in "${options[@]}"
+  do
+	  case $container_runtime in
+	  "Docker" )
+		  source "$working_directory"/container-runtimes/docker/install_docker
+		  source "$working_directory"/kubernetes/install_kubernetes
+		  install_cni
+		  break
+		  ;;
+		"Containerd" )
+		  source "$working_directory"/container-runtimes/containerd/install_containerd
+		  source "$working_directory"/kubernetes/install_kubernetes
+		  install_cni
+		  break
+		  ;;
+    "Quit" )
+		  break
+      ;;
+		*) 
+      echo "$red Invalid option chosen, please try again... $reset" 
+      ;;
+    esac
+  done
+}
+
+function install_cni(){
+  PS3="$yellow Choose a container network interface for the cluster [Number]: $reset"
+  options=("Calico" "Cilium" "Kube Router" "Weave Net" "Quit")
+
+  select container_network_interface in "${options[@]}"
+  do
+    case $container_network_interface in
+    "Calico" )
+       source "$working_directory"/container-network-interfaces/install_calico
+       source "$working_directory"/kubernetes/schedule_pods
+       break
+       ;;
+    "Cilium" )
+       source "$working_directory"/container-network-interfaces/install_cilium
+       source "$working_directory"/kubernetes/schedule_pods
+       break
+       ;;
+    "Kube Router" )
+       source "$working_directory"/container-network-interfaces/install_kube_router
+       source "$working_directory"/kubernetes/schedule_pods
+       break
+       ;;
+    "Weave Net" )
+      source "$working_directory"/container-network-interfaces/install_weavenet
+      source "$working_directory"/kubernetes/schedule_pods
+      break
+      ;;
+    "Quit" )
+      break
+      ;;
+    *) echo "$yellow Invalid option, please try again... $reset" 
+      ;;
+		esac
+	done
+} 
+
+main "$@"
+
+install adiional optional tooling after installing kubernetes and a cni
+		  source "$working_directory"/observability/metrics/install_metrics
+      source "$working_directory"/observability/kubernetes-dashboard/install_dashboard
+      source "$working_directory"/observability/weavescope/install_weavescope
+		  source "$working_directory"/helm/install_helm
