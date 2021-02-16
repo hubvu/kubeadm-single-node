@@ -56,7 +56,7 @@ function install_base(){
 
 function install_cni(){
   PS3="$yellow Choose a container network interface for the cluster [Number]: $reset"
-  options=("Calico" "Cilium" "Kube Router" "Weave Net" "Quit")
+  options=("Calico" "Cilium" "Flannel" "Kube Router" "Weave Net" "Quit")
 
   select container_network_interface in "${options[@]}"
   do
@@ -68,6 +68,11 @@ function install_cni(){
        ;;
     "Cilium" )
        source "$working_directory"/container-network-interfaces/install_cilium
+       source "$working_directory"/kubernetes/schedule_pods
+       break
+       ;;
+    "Flannel" )
+       source "$working_directory"/container-network-interfaces/install_flannel
        source "$working_directory"/kubernetes/schedule_pods
        break
        ;;
@@ -91,9 +96,3 @@ function install_cni(){
 } 
 
 main "$@"
-
-install adiional optional tooling after installing kubernetes and a cni
-		  source "$working_directory"/observability/metrics/install_metrics
-      source "$working_directory"/observability/kubernetes-dashboard/install_dashboard
-      source "$working_directory"/observability/weavescope/install_weavescope
-		  source "$working_directory"/helm/install_helm
