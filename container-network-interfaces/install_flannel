@@ -24,7 +24,7 @@ function flannel_init(){
     sleep 3s
     kubectl apply --record \
                   --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+                  --filename=https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
     echo "$green Flannel Installation complete... $reset"
   else
     error "$red Please ensure that kubeadm and kubectl are installed first... $reset"
