@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+function cilium_connectivity_tests(){
+  if [[ -e /usr/bin/kubectl ]]
+  then
+    echo "$yellow Create a namespace for Cilium connectivity tests... $reset"
+    kubectl create namespace cilium-test
+    sleep 3s
+    echo "$yellow Deploying Cilium connectivity tests... $reset"
+    kubectl apply --record \
+                  --kubeconfig="$sudo_home"/.kube/config \
+                  --namespace=cilium-test \
+                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/examples/kubernetes/connectivity-check/connectivity-check.yaml
+    echo "$green Cilium connectivity tests deployment complete... $reset"
+  else
+    error "$red Please ensure that kubectl is installed first... $reset"
+    exit 1
+  fi
+}
+
+cilium_connectivity_tests "$@"
