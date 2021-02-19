@@ -24,3 +24,17 @@ function main(){
     exit 1
   fi
 }
+
+function install_observability(){
+
+# source "$working_directory"/observability/install_metrics
+# source "$working_directory"/observability/install_weavescope
+# source "$working_directory"/observability/install_grafana
+# source "$working_directory"/observability/install_prometheus
+# source "$working_directory"/observability/install_kubernetes_dashboard
+
+# source "$working_directory"/install_helm
+
+}
+
+main "$@"
