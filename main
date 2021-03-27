@@ -64,26 +64,31 @@ function install_cni(){
     "Calico" )
        source "$working_directory"/container-network-interfaces/install_calico
        source "$working_directory"/kubernetes/schedule_pods
+       install_optional
        break
        ;;
     "Cilium" )
        source "$working_directory"/container-network-interfaces/install_cilium
        source "$working_directory"/kubernetes/schedule_pods
+       install_optional
        break
        ;;
     "Flannel" )
        source "$working_directory"/container-network-interfaces/install_flannel
        source "$working_directory"/kubernetes/schedule_pods
+       install_optional
        break
        ;;
     "Kube Router" )
        source "$working_directory"/container-network-interfaces/install_kube_router
        source "$working_directory"/kubernetes/schedule_pods
+       install_optional
        break
        ;;
     "Weave Net" )
       source "$working_directory"/container-network-interfaces/install_weavenet
       source "$working_directory"/kubernetes/schedule_pods
+      install_optional
       break
       ;;
     "Quit" )
@@ -94,5 +99,27 @@ function install_cni(){
 		esac
 	done
 } 
+
+function install_optional(){
+  PS3="$yellow Would you like to install optional tooling in your environment? [Number]: $reset"
+  options=("Yes" "No")
+
+  select choice in "${options[@]}"
+  do
+	  case $choice in
+	  "Yes" )
+		  source "$working_directory"/optional
+		  break
+		  ;;
+		"No" )
+      echo "$green Exiting from the main script... $reset" 
+		  exit 1
+		  ;;
+		*) 
+      echo "$red Invalid option chosen, please try again... $reset" 
+      ;;
+    esac
+  done
+}
 
 main "$@"

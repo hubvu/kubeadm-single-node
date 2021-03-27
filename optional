@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+working_directory=$(pwd)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+function main(){
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
+  then
+    install_observability
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
+  then
+    install_observability
+  else
+    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    exit 1
+  fi
+}
+
+function install_observability(){
+
+# source "$working_directory"/observability/install_metrics
+# source "$working_directory"/observability/install_weavescope
+# source "$working_directory"/observability/install_grafana
+# source "$working_directory"/observability/install_prometheus
+# source "$working_directory"/observability/install_kubernetes_dashboard
+
+# source "$working_directory"/install_helm
+
+}
+
+main "$@"
