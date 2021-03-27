@@ -17,7 +17,7 @@ function error(){
 function kubernetes_dashboard(){
   if [[ -e /usr/bin/kubectl ]]
   then
-    source "$working_directory"/observability/install_metrics
+    source "$working_directory"/install_metrics
     echo "$yellow Installing Kubernetes dashboard... $reset"
     kubectl apply --record \
                   --kubeconfig="$sudo_home"/.kube/config \
