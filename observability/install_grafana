@@ -6,19 +6,30 @@ red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
-working_directory=$(pwd)
-#sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
 function error(){
   echo "[$date_time]: $*" >&2
 }
 
+# https://github.com/grafana/helm-charts
 function install_grafana(){
   echo "$yellow Installing Grafana through the community Helm chart... $reset"
   if [[ -e /usr/local/bin/helm ]]
   then
-     echo "$yellow ... $reset"
-     # https://github.com/grafana/helm-charts
+     echo "$yellow Adding the Grafrana repository... $reset"
+     helm repo add grafana https://grafana.github.io/helm-charts
+     helm repo update
+     echo "$yellow Listing and searching for the charts in the Grafana repository... $reset"
+     helm repo list | grep "https://grafana.github.io/helm-charts"
+     helm search repo grafana
+     echo "$yellow Installing the Grafana Helm Chart... $reset"
+     kubectl create namespace grafana \
+                              --kubeconfig="$sudo_home"/.kube/config
+     helm install grafana-v1 grafana/grafana \
+                             --kubeconfig="$sudo_home"/.kube/config \
+                             --namespace=grafana
+     echo "$green Grafana Helm Chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1
