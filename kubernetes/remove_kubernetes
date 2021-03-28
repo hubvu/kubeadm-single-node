@@ -41,7 +41,12 @@ function remove_kubernetes_prerequisites(){
 }
 
 function remove_kubernetes_centos(){
-  
+  echo "$yellow Removing kubeadm, kubectl and kubelet... $reset"
+  dnf remove --assumeyes --noautoremove kubeadm \
+                                        kubectl \
+                                        kubelet
+  echo "$yellow Removing '/etc/yum.repos.d/kubernetes.repo' file... $reset"
+  rm --recursive --force --verbose /etc/yum.repos.d/kubernetes.repo
 }
 
 function remove_kubernetes_debian(){
