@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
+node_name=$(kubectl get nodes --kubeconfig="$sudo_home"/.kube/config | awk '{print $1}' | sed --quiet 2,3p)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+function reset_kubeadm(){
+  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
+  then
+    echo "$yellow Draining '$node_name' node first... $reset"
+    kubectl drain "$node_name" --kubeconfig="$sudo_home"/.kube/config \
+                               --delete-local-data \
+                               --force \
+                               --ignore-daemonsets
+    echo "$yellow Reseting 'kubeadm'... $reset"
+    kubeadm reset --force
+    echo "$yellow Removing '/etc/cni/net.d' directory which stores CNI configuration... $reset"
+    rm --recursive --force --verbose /etc/cni/net.d
+    #echo "$yellow Resetting 'iptables'... $reset"
+    #iptables --flush && iptables --table nat --flush && iptables --table mangle --flush && iptables --delete-chain
+    #echo "$yellow Resetting 'IPVS tables'... $reset"
+    #ipvsadm --clear
+    echo "$yellow Removing '.kube/config'... $reset"
+    rm --recursive --force --verbose "$sudo_home"/.kube/config
+    echo "$green Reset complete... $reset"
+  else
+    error "$red Please ensure that kubeadm and kubectl are installed first... $reset"
+    exit 1
+  fi
+}
+
+reset_kubeadm "$@"
