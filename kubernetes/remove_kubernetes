@@ -28,7 +28,16 @@ function main(){
 }
 
 function remove_kubernetes_prerequisites(){
-  
+  echo "$yellow Removing '/etc/modules-load.d/containerd.conf' file... $reset"
+  rm --recursive --force --verbose /etc/modules-load.d/containerd.conf
+  echo "$yellow Removing the required kernel modules... $reset"
+  modprobe --remove --verbose overlay
+  modprobe --remove --verbose br_netfilter
+  echo "$yellow Removing '/etc/sysctl.d/99-kubernetes-cri.conf' file... $reset"
+  rm --recursive --force --verbose /etc/sysctl.d/99-kubernetes-cri.conf
+  echo "$yellow Applying the new sysctl parameters... $reset"
+  sysctl --system
+  echo "$green Removal of Kubernetes pre-requisites completed... $reset"
 }
 
 function remove_kubernetes_centos(){
