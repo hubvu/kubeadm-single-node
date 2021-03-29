@@ -25,7 +25,14 @@ function main(){
 }
 
 function remove_docker_centos(){
-    
+  echo "$yellow Removing Docker CE [Community Edition]... $reset"
+  dnf remove --assumeyes --noautoremove docker-ce \
+                                        docker-ce-cli \
+                                        containerd.io
+  echo "$yellow Removing '/etc/yum.repos.d/docker.repo' file... $reset"
+  rm --recursive --force --verbose /etc/yum.repos.d/docker.repo
+  dnf update
+  echo "$green Removal of Docker CE [Community Edition] completed... $reset"
 }
 
 function remove_docker_debian(){
