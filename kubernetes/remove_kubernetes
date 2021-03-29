@@ -51,5 +51,19 @@ function remove_kubernetes_centos(){
   echo "$green Removal of kubeadm, kubectl and kubelet completed... $reset"
 }
 
+function remove_kubernetes_debian(){
+  echo "$yellow Unholding kubeadm, kubectl and kubelet packages... $reset"
+  apt-mark unhold kubelet \
+                  kubeadm \
+                  kubectl
+  echo "$yellow Removing kubeadm, kubectl and kubelet... $reset"
+  apt install --yes kubeadm \
+                    kubectl \
+                    kubelet
+  echo "$yellow Removing '/etc/apt/sources.list.d/kubernetes.list' file... $reset"
+  rm --recursive --force --verbose /etc/apt/sources.list.d/kubernetes.list
+  apt update
+  echo "$green Removal of kubeadm, kubectl and kubelet completed... $reset"
+}
 
 main "$@"
