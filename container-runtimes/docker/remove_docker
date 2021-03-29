@@ -33,6 +33,7 @@ function remove_docker_centos(){
   rm --recursive --force --verbose /etc/yum.repos.d/docker.repo
   dnf update
   echo "$green Removal of Docker CE [Community Edition] completed... $reset"
+  remove_docker_logrotate
 }
 
 function remove_docker_debian(){
@@ -48,6 +49,8 @@ function remove_docker_debian(){
 }
 
 function remove_docker_logrotate(){
-  
+  echo "$yellow Removing '/etc/docker/daemon.json' file... $reset"
+  rm --recursive --force --verbose /etc/docker/daemon.json
+  echo "$green Removal of '/etc/docker/daemon.json' completed... $reset"
 }
 main "$@"
