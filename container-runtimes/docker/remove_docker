@@ -53,4 +53,5 @@ function remove_docker_logrotate(){
   rm --recursive --force --verbose /etc/docker/daemon.json
   echo "$green Removal of '/etc/docker/daemon.json' completed... $reset"
 }
+
 main "$@"
