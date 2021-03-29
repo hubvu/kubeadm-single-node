@@ -47,10 +47,9 @@ function remove_kubernetes_centos(){
                                         kubelet
   echo "$yellow Removing '/etc/yum.repos.d/kubernetes.repo' file... $reset"
   rm --recursive --force --verbose /etc/yum.repos.d/kubernetes.repo
+  dnf update
+  echo "$green Removal of kubeadm, kubectl and kubelet completed... $reset"
 }
 
-function remove_kubernetes_debian(){
-  
-}
 
 main "$@"
