@@ -42,7 +42,7 @@ function remove_docker_debian(){
                    docker-ce-cli \
                    containerd.io
   echo "$yellow Removing Docker CE [Community Edition] repository... $reset"
-  sudo add-apt-repository --remove "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+  add-apt-repository --remove "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
   apt update
   echo "$green Removal of Docker CE [Community Edition] completed... $reset"
   remove_docker_logrotate
