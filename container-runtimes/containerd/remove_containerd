@@ -6,7 +6,6 @@ red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
-working_directory=$(pwd)
 
 function error(){
   echo "[$date_time]: $*" >&2
@@ -28,21 +27,42 @@ function main(){
 }
 
 function remove_containerd_prerequisites(){
-  
+  echo "$yellow Removing '/etc/modules-load.d/containerd.conf' file... $reset"
+  rm --recursive --force --verbose /etc/modules-load.d/containerd.conf
+  echo "$yellow Removing the required kernel modules... $reset"
+  modprobe --remove --verbose overlay
+  modprobe --remove --verbose br_netfilter
+  echo "$yellow Removing '/etc/sysctl.d/99-kubernetes-cri.conf' file... $reset"
+  rm --recursive --force --verbose /etc/sysctl.d/99-kubernetes-cri.conf
+  echo "$yellow Applying the new sysctl parameters... $reset"
+  sysctl --system
+  echo "$green Removal of Containerd pre-requisites completed... $reset"
 }
 
 function remove_containerd_centos(){
-  # ...
+  echo "$yellow Removing Containerd... $reset"
+  dnf remove --assumeyes --noautoremove containerd.io
+  echo "$yellow Removing '/etc/yum.repos.d/docker.repo' file... $reset"
+  rm --recursive --force --verbose /etc/yum.repos.d/docker.repo
+  dnf update
+  echo "$green Removal of Containerd completed... $reset"
   remove_containerd_configuration_file
 }
 
 function remove_containerd_debian(){
-  # ...
+  echo "$yellow Removing Containerd... $reset"
+  apt remove --yes containerd.io
+  echo "$yellow Removing Containerd repository... $reset"
+  sudo add-apt-repository --remove "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+  apt update
+  echo "$green Removal of Containerd completed... $reset"
   remove_containerd_configuration_file
 }
 
 function remove_containerd_configuration_file(){
-
+  echo "$yellow Removing '/etc/containerd/config.toml' file... $reset"
+  rm --recursive --force --verbose /etc/containerd
+  echo "$green Removal of '/etc/containerd/config.toml' completed... $reset"
 }
 
 main "$@"
