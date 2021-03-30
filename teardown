@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+working_directory=$(pwd)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+function main(){
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
+  then
+    teardown_kubeadm_only
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
+  then
+    teardown_kubeadm_only
+  else
+    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    exit 1
+  fi
+}
+
+function teardown_kubeadm_only(){
+# only resets kubeadm - does NOT remove kubernetes utilities, docker, container, helm, etc.
+
+# source "$working_directory"/reset/reset_kubeadm
+teardown_all
+}
+
+function teardown_all(){
+# removes all of the kubernetes utilities, docker, container, helm, etc.
+
+# source "$working_directory"/reset/reset_kubeadm
+# source "$working_directory"/kubernetes/remove_kubernetes
+# source "$working_directory"/docker/remove_docker
+# source "$working_directory"/containerd/remove_containerd
+# source "$working_directory"/helm/remove_helm
+}
+
+main "$@"
