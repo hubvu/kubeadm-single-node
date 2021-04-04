@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+function helm_remove(){
+  echo "$yellow Removing Helm from '/usr/local/bin/helm' path... $reset"
+  rm --recursive --force --verbose /usr/local/bin/helm
+  echo "$green Removal of Helm completed... $reset"
+}
+
+helm_remove "$@"
