@@ -15,21 +15,26 @@ function error(){
 function main(){
   if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
   then
-    teardown_kubeadm_only
+    choose_teardown
   elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
   then
-    teardown_kubeadm_only
+    choose_teardown
   else
     error "$red Please ensure that you are using CentOS or Debian... $reset"
     exit 1
   fi
 }
 
+function choose_teardown(){
+  PS3="$yellow Please select a option [Number]: $reset"
+  options=("Reset Kubeadm" "Teardown Everything" "Quit")
+
+}
+
 function teardown_kubeadm_only(){
 # only resets kubeadm - does NOT remove kubernetes utilities, docker, container, helm, etc.
 
 # source "$working_directory"/reset/reset_kubeadm
-teardown_all
 }
 
 function teardown_all(){
