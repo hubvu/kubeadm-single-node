@@ -17,22 +17,46 @@ function install_prometheus(){
  echo "$yellow Installing Prometheus through the community Helm charts... $reset"
   if [[ -e /usr/local/bin/helm ]]
   then
-     echo "$yellow Adding the Prometheus Communiy & Kube State Metrics repositories... $reset"
-     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-     helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics
-     helm repo update
-     echo "$yellow Listing and searching for the charts in the Prometheus Communiy & Kube State Metrics repository... $reset"
-     helm repo list | grep "https://prometheus-community.github.io/helm-charts"
-     helm search repo prometheus
-     helm repo list | grep "https://kubernetes.github.io/kube-state-metrics"
-     helm search repo kube-state-metrics
-     echo "$yellow Installing the Prometheus Communiy  Helm Chart... $reset"
-     kubectl create namespace prometheus \
-                              --kubeconfig="$sudo_home"/.kube/config
-     helm install prometheus-v1 prometheus-community/prometheus \
-                                --kubeconfig="$sudo_home"/.kube/config \
-                                --namespace=prometheus
-     echo "$green Prometheus Communiy Helm Chart installation completed... $reset"
+    echo "$yellow Adding the Prometheus Communiy & Kube State Metrics repositories... $reset"
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --force-update \
+      --debug
+    helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --force-update \
+      --debug
+    helm repo update \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --debug
+    echo "$yellow Listing and searching for the charts in the Prometheus Communiy & Kube State Metrics repository... $reset"
+    helm repo list \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug \
+      | grep "https://prometheus-community.github.io/helm-charts"
+    helm search repo prometheus \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug
+    helm repo list \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug \
+      | grep "https://kubernetes.github.io/kube-state-metrics"
+    helm search repo kube-state-metrics \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug
+    echo "$yellow Installing the Prometheus Community Helm Chart... $reset"
+    helm install prometheus-community/prometheus \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --namespace=prometheus \
+      --create-namespace \
+      --atomic \
+      --debug
+    echo "$green Prometheus Community Helm Chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1
