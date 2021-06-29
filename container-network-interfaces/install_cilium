@@ -8,30 +8,94 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
+verify_cilium_cli=$(sha256sum --check cilium-linux-amd64.tar.gz.sha256sum | awk '{print $2}')
 
 function error(){
   echo "[$date_time]: $*" >&2
 }
 
-# https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/
+function main(){
+  echo "$yellow Checking for Helm first as it is a pre-requisite... $reset"
+  if [[ -e /usr/local/bin/helm ]]
+  then
+    echo "$yellow Found Helm... $reset"
+    install_cilium_hubble_cli
+  else
+    echo "$yellow Installing Helm first... $reset"
+    source "$working_directory"/helm/install_helm
+    install_cilium_hubble_cli
+  fi
+}
+
+function install_cilium_hubble_cli(){
+  echo "$yellow Installing Cilium CLI first... $reset"
+  curl --location \
+       --remote-name-all \
+       https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
+  if [[ $verify_cilium_cli == OK ]]
+  then
+    echo "$yellow Moving Cilium CLI binary to '/usr/local/bin'... $reset"
+    tar --extract \
+        --gzip \
+        --verbose \
+        --file \
+        --directory \
+        cilium-linux-amd64.tar.gz /usr/local/bin
+    echo "$yellow Deleting archive and checksum... $reset"
+    rm --recursive --verbose cilium-linux-amd64.tar.gz{,.sha256sum}
+    echo "$green Cilium CLI binary installation complete... $reset"
+    cilium_init
+  else
+    error "$red sha256sum check is invalid, ensure that the binary has not been tampered with first... $reset"
+    exit 1
+  fi
+}
+
+# https://docs.cilium.io/en/v1.10/gettingstarted/k8s-install-helm/
+# https://github.com/cilium/cilium/tree/master/install/kubernetes/cilium
 function cilium_init(){
-  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
+  echo "$yellow Installing Cilium & Hubble through the Helm chart... $reset"
+  if [[ -e /usr/bin/kubeadm ]]
   then
     echo "$yellow Initialising the control plane... $reset"
     kubeadm init
     source "$working_directory"/kubernetes/kubectl_configure
-    echo "$yellow Installing Cilium... $reset"
     sleep 3s
-    kubectl apply --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/install/kubernetes/quick-install.yaml
-    echo "$yellow Enabling Hubble for cluster-wide visibility... $reset"
-    kubectl apply --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/install/kubernetes/quick-hubble-install.yaml
-     echo "$green Cilium installation complete... $reset"
+    echo "$yellow Adding the Cilium repository... $reset"
+    helm repo add cilium https://helm.cilium.io/ \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --force-update \
+      --debug
+    helm repo update \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --debug
+    echo "$yellow Listing and searching for the charts in the Cilium repository... $reset"
+    helm repo list \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug \
+      | grep "https://helm.cilium.io/"
+    helm search repo cilium \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug
+     echo "$yellow Installing the Cilium & Hubble Helm chart... $reset"
+     helm install cilium cilium/cilium \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --namespace=kube-system \
+      --atomic \
+      --debug \
+      --set debug.enabled=true \
+      --set nodeinit.restartPods=true \
+      --set hubble.relay.enabled=true \
+      --set hubble.ui.enabled=true
+     echo "$green Cilium & Hubble Helm chart installation completed... $reset"
+     echo "$yellow Valitating Cilium & Hubble deployment... $reset" 
+     cilium status
+     cilium connectivity test
   else
-    error "$red Please ensure that kubeadm and kubectl are installed first... $reset"
+    error "$red Please ensure that kubeadm is installed first... $reset"
     exit 1
   fi
 }
