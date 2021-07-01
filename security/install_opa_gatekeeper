@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+reset=$(tput sgr0)
+red=$(tput bold && tput setaf 1)
+green=$(tput bold && tput setaf 2)
+yellow=$(tput bold && tput setaf 3)
+date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
+
+function error(){
+  echo "[$date_time]: $*" >&2
+}
+
+# https://open-policy-agent.github.io/gatekeeper/website/docs/install/
+# https://github.com/open-policy-agent/gatekeeper/tree/master/charts/gatekeeper
+function install_opa_gatekeeper(){
+  echo "$yellow Installing Open Policy Agent - Gatekeeper through the Helm chart... $reset"
+  if [[ -e /usr/local/bin/helm ]]
+  then
+    echo "$yellow Adding the Open Policy Agent - Gatekeeper repository... $reset"
+    helm repo add gatekeeper https://open-policy-agent.github.io/gatekeeper/charts \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --force-update \
+      --debug
+    helm repo update \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --debug
+    echo "$yellow Listing and searching for the chart in the Open Policy Agent - Gatekeeper repository... $reset"
+    helm repo list \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug \
+      | grep "https://open-policy-agent.github.io/gatekeeper/charts"
+    helm search repo gatekeeper \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug
+     echo "$yellow Installing the Open Policy Agent - Gatekeeper Helm Chart... $reset"
+     helm install gatekeeper/gatekeeper \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --namespace=gatekeeper-system \
+      --create-namespace \
+      --atomic \
+      --debug \
+      --generate-name \
+      --set logDenies=true \
+      --set logLevel=DEBUG
+     echo "$green Open Policy Agent - Gatekeeper Helm Chart installation completed... $reset"
+  else
+    error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
+    exit 1
+  fi
+}
+
+install_opa_gatekeeper "$@"
