@@ -18,7 +18,7 @@ function reset_kubeadm(){
   then
     echo "$yellow Draining '$node_name' node first... $reset"
     kubectl drain "$node_name" --kubeconfig="$sudo_home"/.kube/config \
-                               --delete-local-data \
+                               --delete-emptydir-data \
                                --force \
                                --ignore-daemonsets
     echo "$yellow Reseting 'kubeadm'... $reset"
