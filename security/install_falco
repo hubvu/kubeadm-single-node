@@ -12,7 +12,6 @@ function error(){
   echo "[$date_time]: $*" >&2
 }
 
-# https://sysdig.com/blog/falco-helm-chart/
 # https://github.com/falcosecurity/charts/tree/master/falco
 function install_falco(){
   echo "$yellow Installing Falco through the Helm chart... $reset"
