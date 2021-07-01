@@ -43,6 +43,7 @@ function install_grafana(){
       --create-namespace \
       --atomic \
       --debug \
+      --generate-name \
       --set sidecar.dashboards.enabled=true \
       --set sidecar.datasources.enabled=true \
       --set serviceMonitor.enabled=true \
