@@ -55,7 +55,8 @@ function install_prometheus(){
       --namespace=prometheus \
       --create-namespace \
       --atomic \
-      --debug
+      --debug \
+      --generate-name
     echo "$green Prometheus Community Helm Chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
