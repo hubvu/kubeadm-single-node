@@ -56,7 +56,10 @@ function install_prometheus(){
       --create-namespace \
       --atomic \
       --debug \
-      --generate-name
+      --generate-name \
+      --set alertmanager.persistentVolume.enabled=false \
+      --set server.persistentVolume.enabled=false \
+      --set pushgateway.persistentVolume.enabled=false
     echo "$green Prometheus Community Helm Chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
