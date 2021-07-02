@@ -36,7 +36,7 @@ function install_falco(){
       --output=table \
       --debug
      echo "$yellow Installing the Falco Security Helm Chart... $reset"
-     helm install falco falcosecurity/falco \
+     helm install falcosecurity/falco \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --namespace=falcosecurity \
