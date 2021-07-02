@@ -46,8 +46,6 @@ function install_grafana(){
       --generate-name \
       --set sidecar.dashboards.enabled=true \
       --set sidecar.datasources.enabled=true \
-      --set serviceMonitor.enabled=true \
-      --set serviceMonitor.namespace=prometheus \
       --set imageRenderer.enabled=true
      echo "$green Grafana Helm chart installation completed... $reset"
   else
