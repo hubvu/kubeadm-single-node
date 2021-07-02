@@ -77,7 +77,7 @@ function cilium_init(){
       --output=table \
       --debug
      echo "$yellow Installing the Cilium Helm chart... $reset"
-     helm install cilium cilium/cilium \
+     helm install cilium/cilium \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --namespace=kube-system \
