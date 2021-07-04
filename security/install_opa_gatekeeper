@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
@@ -36,7 +37,7 @@ function install_opa_gatekeeper(){
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
-     echo "$yellow Installing the Open Policy Agent - Gatekeeper Helm Chart... $reset"
+     echo "$yellow Installing the Open Policy Agent - Gatekeeper Helm chart... $reset"
      helm install gatekeeper/gatekeeper \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
@@ -47,7 +48,7 @@ function install_opa_gatekeeper(){
       --generate-name \
       --set logDenies=true \
       --set logLevel=DEBUG
-     echo "$green Open Policy Agent - Gatekeeper Helm Chart installation completed... $reset"
+     echo "$green Open Policy Agent - Gatekeeper Helm chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1

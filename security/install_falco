@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
@@ -14,7 +15,7 @@ function error(){
 
 # https://github.com/falcosecurity/charts/tree/master/falco
 function install_falco(){
-  echo "$yellow Installing Falco through the Helm chart... $reset"
+  echo "$yellow Installing Falco Security through the Helm chart... $reset"
   if [[ -e /usr/local/bin/helm ]]
   then
     echo "$yellow Adding the Falco Security repository... $reset"
@@ -35,7 +36,7 @@ function install_falco(){
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
-     echo "$yellow Installing the Falco Security Helm Chart... $reset"
+     echo "$yellow Installing the Falco Security Helm chart... $reset"
      helm install falcosecurity/falco \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
@@ -46,7 +47,7 @@ function install_falco(){
       --generate-name \
       --set auditLog.enabled=true \
       --set falco.logLevel=debug
-     echo "$green Falco Security Helm Chart installation completed... $reset"
+     echo "$green Falco Security Helm chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1
