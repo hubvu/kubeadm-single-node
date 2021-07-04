@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 
 function error(){
@@ -29,40 +30,40 @@ function main(){
 function remove_kubernetes_prerequisites(){
   echo "$yellow Removing '/etc/modules-load.d/containerd.conf' file... $reset"
   rm --recursive --force --verbose /etc/modules-load.d/containerd.conf
-  echo "$yellow Removing the required kernel modules... $reset"
+  echo "$yellow Removing the required kernel modules first... $reset"
   modprobe --remove --verbose overlay
   modprobe --remove --verbose br_netfilter
   echo "$yellow Removing '/etc/sysctl.d/99-kubernetes-cri.conf' file... $reset"
   rm --recursive --force --verbose /etc/sysctl.d/99-kubernetes-cri.conf
-  echo "$yellow Applying the new sysctl parameters... $reset"
+  echo "$yellow Applying the new 'sysctl' parameters... $reset"
   sysctl --system
   echo "$green Removal of Kubernetes pre-requisites completed... $reset"
 }
 
 function remove_kubernetes_centos(){
-  echo "$yellow Removing kubeadm, kubectl and kubelet... $reset"
+  echo "$yellow Removing 'kubeadm', 'kubectl' and 'kubelet'... $reset"
   dnf remove --assumeyes --noautoremove kubeadm \
                                         kubectl \
                                         kubelet
   echo "$yellow Removing '/etc/yum.repos.d/kubernetes.repo' file... $reset"
   rm --recursive --force --verbose /etc/yum.repos.d/kubernetes.repo
   dnf update
-  echo "$green Removal of kubeadm, kubectl and kubelet completed... $reset"
+  echo "$green Removal of 'kubeadm', 'kubectl' and 'kubelet' completed... $reset"
 }
 
 function remove_kubernetes_debian(){
-  echo "$yellow Unholding kubeadm, kubectl and kubelet packages... $reset"
+  echo "$yellow Unholding 'kubeadm', 'kubectl' and 'kubelet' packages... $reset"
   apt-mark unhold kubelet \
                   kubeadm \
                   kubectl
-  echo "$yellow Removing kubeadm, kubectl and kubelet... $reset"
+  echo "$yellow Removing 'kubeadm', 'kubectl' and 'kubelet'... $reset"
   apt install --yes kubeadm \
                     kubectl \
                     kubelet
   echo "$yellow Removing '/etc/apt/sources.list.d/kubernetes.list' file... $reset"
   rm --recursive --force --verbose /etc/apt/sources.list.d/kubernetes.list
   apt update
-  echo "$green Removal of kubeadm, kubectl and kubelet completed... $reset"
+  echo "$green Removal of 'kubeadm', 'kubectl' and 'kubelet' completed... $reset"
 }
 
 main "$@"

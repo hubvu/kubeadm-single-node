@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
@@ -18,41 +19,41 @@ function main(){
     kubectl_configure
     kubectl_autocomplete
   else
-    error "$red Please ensure that kubeadm, kubectl and kubelet are installed first... $reset"
+    error "$red Please ensure that 'kubeadm', 'kubectl' and 'kubelet' are installed first... $reset"
     exit 1
   fi
 }
 
 function kubectl_configure(){
-  echo "$yellow Configuring kubectl... $reset"
+  echo "$yellow Configuring 'kubectl'... $reset"
   if [[ -d $HOME/.kube ]]
   then
     rm --recursive --force --verbose "$sudo_home"/.kube
     mkdir --parents --verbose "$sudo_home"/.kube
     cp --verbose /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
     chown --verbose "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
-	  echo "$green Kubectl configuration completed... $reset"
+	  echo "$green 'kubectl' configuration is completed... $reset"
   else
 	  mkdir --parents --verbose "$sudo_home"/.kube
     cp --verbose /etc/kubernetes/admin.conf "$sudo_home"/.kube/config
 	  chown --verbose "$SUDO_UID:$SUDO_UID" "$sudo_home"/.kube/config
-	  echo "$green Kubectl configuration completed... $reset"
+	  echo "$green 'kubectl' configuration is completed... $reset"
   fi
 }
 
 function kubectl_autocomplete(){
-  echo "$yellow Configuring kubectl auto-completion... $reset"
+  echo "$yellow Configuring 'kubectl' auto-completion... $reset"
   echo "source <(kubectl completion bash)" >> "$sudo_home"/.bashrc
-  echo "$green Kubectl auto-completion onfiguration completed... $reset"
+  echo "$green 'kubectl' auto-completion configuration completed... $reset"
   kubelet_start
 }
 
 function kubelet_start(){
-  echo "$yellow Configuring kubelet to startup on boot... $reset"
+  echo "$yellow Configuring 'kubelet' service to startup on boot... $reset"
   systemctl enable kubelet.service
-  echo "$yellow Restarting kubelet... $reset"
+  echo "$yellow Restarting 'kubelet' service... $reset"
   systemctl restart kubelet.service
-  echo "$green Kubelet configuration completed.... $reset"
+  echo "$green 'kubelet' configuration is completed.... $reset"
 }
 
 main "$@"

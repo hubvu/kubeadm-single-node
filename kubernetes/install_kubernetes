@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
@@ -22,7 +23,7 @@ function main(){
     kubernetes_prerequisites
     kubernetes_debian
   else
-    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset" 
     exit 1
   fi
 }
@@ -31,18 +32,18 @@ function kubernetes_prerequisites(){
   echo "$yellow Setting up Kubernetes pre-requisites... $reset"
   if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]
   then
-    echo "$yellow Copying the containerd.conf file to /etc/modules-load.d/... $reset"
+    echo "$yellow Copying the 'containerd.conf' file to '/etc/modules-load.d/'... $reset"
     cp --verbose "$working_directory"/container-runtimes/containerd/containerd.conf /etc/modules-load.d/containerd.conf
-    echo "$yellow Ensuring that the required kernel modules are loaded... $reset"
+    echo "$yellow Ensuring that the required kernel modules are loaded first... $reset"
     modprobe --verbose overlay
     modprobe --verbose br_netfilter
-    echo "$yellow Copying 99-kubernetes-cri.conf file to /etc/sysctl.d/... $reset"
+    echo "$yellow Copying '99-kubernetes-cri.conf' file to '/etc/sysctl.d/'... $reset"
     cp --verbose "$working_directory"/container-runtimes/containerd/99-kubernetes-cri.conf /etc/sysctl.d/99-kubernetes-cri.conf
-    echo "$yellow Applying the required sysctl parameters... $reset"
+    echo "$yellow Applying the required 'sysctl' parameters... $reset"
     sysctl --system
     echo "$green Kubernetes pre-requisites completed... $reset"
   else
-    error "$red Please ensure that the containerd.conf & 99-kubernetes-cri.conf files exists in the working directory first... $reset"
+    error "$red Please ensure that the 'containerd.conf' & '99-kubernetes-cri.conf' files exists in the container-runtimes directory first... $reset"
     exit 1
   fi
 }
@@ -55,14 +56,14 @@ function kubernetes_centos(){
     echo "$yellow Installing useful dependencies... $reset"
     dnf install --assumeyes bash-completion \
                             pwgen
-    echo "$yellow Installing kubeadm, kubectl and kubelet [latest]... $reset"
+    echo "$yellow Installing 'kubeadm', 'kubectl' and 'kubelet' [latest]... $reset"
     dnf update
     dnf install --assumeyes --disableexcludes=kubernetes kubeadm \
                                                          kubectl \
                                                          kubelet
-    echo "$green Installing kubeadm, kubectl and kubelet completed... $reset"
+    echo "$green Installing 'kubeadm', 'kubectl' and 'kubelet' is completed... $reset"
   else
-    error "$red Please ensure that the kubernetes.repo file exists in the working directory first... $reset"
+    error "$red Please ensure that the 'kubernetes.repo' file exists in the kubernetes directory first... $reset"
     exit 1
   fi
 }
@@ -84,18 +85,18 @@ function kubernetes_debian(){
          --location https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
     echo "$yellow Setting up the Kubernetes repository... $reset"
     cp "$working_directory"/kubernetes/kubernetes.list /etc/apt/sources.list.d/kubernetes.list
-    echo "$yellow Installing kubeadm, kubectl and kubelet [latest]... $reset"
+    echo "$yellow Installing 'kubeadm', 'kubectl' and 'kubelet' [latest]... $reset"
     apt update
     apt install --yes kubeadm \
                       kubectl \
                       kubelet
-    echo "$yellow Ensuring kubeadm, kubectl and kubelet from being installed, upgraded or removed... $reset"
+    echo "$yellow Ensuring that 'kubeadm', 'kubectl' and 'kubelet' packages are held from being installed, upgraded or removed... $reset"
     apt-mark hold kubelet \
                   kubeadm \
                   kubectl
-    echo "$green Installing kubeadm, kubectl and kubelet completed... $reset" 
+    echo "$green Installing 'kubeadm', 'kubectl' and 'kubelet' is completed... $reset" 
   else
-    error "$red Please ensure that the kubernetes.list file exists in the working directory first... $reset"
+    error "$red Please ensure that the 'kubernetes.list' file exists in the kubernetes directory first... $reset"
     exit 1
   fi
 }
