@@ -92,7 +92,7 @@ function docker_logrotate(){
   if [[ -e $working_directory/container-runtimes/docker/daemon.json ]]
   then
     cp "$working_directory"/container-runtimes/docker/daemon.json /etc/docker/daemon.json
-    echo "$yellow Restarting Docker & Containerd... $reset"
+    echo "$yellow Restarting Docker & Containerd services... $reset"
     systemctl restart docker.service containerd.service
     echo "$green Docker and automatic log-rotation configuration completed... $reset"
   else
