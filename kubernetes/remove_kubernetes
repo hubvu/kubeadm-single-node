@@ -22,7 +22,7 @@ function main(){
     remove_kubernetes_prerequisites
     remove_kubernetes_debian
   else
-    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset" 
     exit 1
   fi
 }
