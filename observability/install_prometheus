@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
@@ -17,7 +18,7 @@ function install_prometheus(){
  echo "$yellow Installing Prometheus through the community Helm charts... $reset"
   if [[ -e /usr/local/bin/helm ]]
   then
-    echo "$yellow Adding the Prometheus Communiy & Kube State Metrics repositories... $reset"
+    echo "$yellow Adding the Prometheus community & Kube State Metrics repositories... $reset"
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts \
       --kubeconfig="$sudo_home"/.kube/config \
       --force-update \
@@ -29,7 +30,7 @@ function install_prometheus(){
     helm repo update \
       --kubeconfig="$sudo_home"/.kube/config \
       --debug
-    echo "$yellow Listing and searching for the charts in the Prometheus Communiy & Kube State Metrics repository... $reset"
+    echo "$yellow Listing and searching for the charts in the Prometheus community & Kube State Metrics repository... $reset"
     helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
@@ -48,7 +49,7 @@ function install_prometheus(){
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
-    echo "$yellow Installing the Prometheus Community Helm Chart... $reset"
+    echo "$yellow Installing the Prometheus community Helm Chart... $reset"
     helm install prometheus-community/prometheus \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
@@ -60,7 +61,7 @@ function install_prometheus(){
       --set alertmanager.persistentVolume.enabled=false \
       --set server.persistentVolume.enabled=false \
       --set pushgateway.persistentVolume.enabled=false
-    echo "$green Prometheus Community Helm Chart installation completed... $reset"
+    echo "$green Prometheus community Helm Chart installation is completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1
