@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
@@ -18,7 +19,7 @@ function error(){
 function calico_init(){
   if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
   then
-    echo "$yellow Initialising the control plane and allocating a pod network CIDR - 192.168.0.0/16 - for Calico... $reset"
+    echo "$yellow Initialising the control plane and allocating a pod network CIDR - [192.168.0.0/16] - for Calico... $reset"
     kubeadm init --pod-network-cidr=192.168.0.0/16
     source "$working_directory"/kubernetes/kubectl_configure
     echo "$yellow Installing Calico... $reset"
@@ -26,9 +27,9 @@ function calico_init(){
     kubectl apply --record \
                   --kubeconfig="$sudo_home"/.kube/config \
                   --filename=https://docs.projectcalico.org/manifests/calico.yaml
-   echo "$green Calico Installation complete... $reset"
+   echo "$green Calico installation complete... $reset"
   else
-    error "$red Please ensure that kubeadm and kubectl are installed first... $reset"
+    error "$red Please ensure that 'kubeadm' and 'kubectl' are installed first... $reset"
     exit 1
   fi
 }

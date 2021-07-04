@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
@@ -22,7 +23,7 @@ function main(){
     containerd_prerequisites
     containerd_debian
   else
-    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
     exit 1
   fi
 }
@@ -31,18 +32,18 @@ function containerd_prerequisites(){
   echo "$yellow Setting up Containerd pre-requisites... $reset"
   if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]
   then
-    echo "$yellow Copying the containerd.conf file to /etc/modules-load.d/... $reset"
+    echo "$yellow Copying the 'containerd.conf' file to '/etc/modules-load.d/'... $reset"
     cp "$working_directory"/container-runtimes/containerd/containerd.conf /etc/modules-load.d/containerd.conf
-    echo "$yellow Ensuring that the required kernel modules are loaded... $reset"
+    echo "$yellow Ensuring that the required kernel modules are loaded first... $reset"
     modprobe --verbose overlay
     modprobe --verbose br_netfilter
-    echo "$yellow Copying 99-kubernetes-cri.conf file to /etc/sysctl.d/... $reset"
+    echo "$yellow Copying '99-kubernetes-cri.conf' file to '/etc/sysctl.d/'... $reset"
     cp "$working_directory"/container-runtimes/containerd/99-kubernetes-cri.conf /etc/sysctl.d/99-kubernetes-cri.conf
-    echo "$yellow Applying the required sysctl parameters... $reset"
+    echo "$yellow Applying the required 'sysctl' parameters first... $reset"
     sysctl --system
     echo "$green Containerd pre-requisites completed... $reset"
   else
-    error "$red Please ensure that the containerd.conf & 99-kubernetes-cri.conf files exists in the working directory first... $reset"
+    error "$red Please ensure that the 'containerd.conf' & '99-kubernetes-cri.conf' files exists in the working directory first... $reset"
     exit 1
   fi
 }
@@ -61,7 +62,7 @@ function containerd_centos(){
 }
 
 function containerd_debian(){
-  echo "$yellow Setting up the DDocker CE [Community Edition] repository... $reset"
+  echo "$yellow Setting up the Docker CE [Community Edition] repository... $reset"
   apt update
   apt install --yes apt-transport-https \
                     ca-certificates \

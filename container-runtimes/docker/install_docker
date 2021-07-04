@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
@@ -20,7 +21,7 @@ function main(){
   then
     docker_debian
   else
-    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
     exit 1
   fi
 }
@@ -65,7 +66,7 @@ function docker_debian(){
        --silent \
        --show-error \
        --location https://download.docker.com/linux/debian/gpg | apt-key add -
-  echo "$yellow Verifing that the key exists using the fingerprint... $reset"
+  echo "$yellow Verifing that the key exists using the fingerprint first... $reset"
   apt-key fingerprint 0EBFCD88
   echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
   add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
@@ -95,7 +96,7 @@ function docker_logrotate(){
     systemctl restart docker.service containerd.service
     echo "$green Docker and automatic log-rotation configuration completed... $reset"
   else
-    error "$red The daemon.json file does not exist in the working directory... $reset"
+    error "$red The 'daemon.json' file does not exist in the working directory... $reset"
   fi
   docker_non_root_user
 }
