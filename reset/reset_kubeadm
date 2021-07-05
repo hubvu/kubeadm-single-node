@@ -32,7 +32,7 @@ function reset_kubeadm(){
     #ipvsadm --clear
     echo "$yellow Removing '.kube/config'... $reset"
     rm --recursive --force --verbose "$sudo_home"/.kube/config
-    echo "$green Reset is completed... $reset"
+    echo "$green Kubeadm reset is completed... $reset"
   else
     error "$red Please ensure that 'kubeadm' and 'kubectl' are installed first... $reset"
     exit 1
