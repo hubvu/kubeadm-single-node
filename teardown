@@ -62,8 +62,8 @@ function teardown_all(){
   delete_namespaces
   source "$working_directory"/reset/reset_kubeadm
   source "$working_directory"/kubernetes/remove_kubernetes
-  source "$working_directory"/docker/remove_docker
-  source "$working_directory"/containerd/remove_containerd
+  source "$working_directory"/container-runtimes/docker/remove_docker
+  source "$working_directory"/container-runtimes/containerd/remove_containerd
   source "$working_directory"/helm/remove_helm
 }
 
