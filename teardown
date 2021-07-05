@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
+sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
 function error(){
   echo "[$date_time]: $*" >&2
@@ -20,31 +23,57 @@ function main(){
   then
     choose_teardown
   else
-    error "$red Please ensure that you are using CentOS or Debian... $reset"
+    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
     exit 1
   fi
 }
 
 function choose_teardown(){
   PS3="$yellow Please select a option [Number]: $reset"
-  options=("Reset Kubeadm" "Teardown Everything" "Quit")
+  options=("Teardown Kubeadm" "Teardown Everything" "Quit")
 
+  select delete in "${options[@]}"
+  do
+	  case $delete in
+	  "Teardown Kubeadm" )
+		  teardown_kubeadm_only
+		  break
+		  ;;
+		"Teardown Everything" )
+		  teardown_all
+		  break
+		  ;;
+    "Quit" )
+		  break
+      ;;
+		*) 
+      echo "$red Invalid option chosen, please try again... $reset" 
+      ;;
+    esac
+  done
 }
 
 function teardown_kubeadm_only(){
-# only resets kubeadm - does NOT remove kubernetes utilities, docker, container, helm, etc.
-
-# source "$working_directory"/reset/reset_kubeadm
+  delete_namespaces
+  source "$working_directory"/reset/reset_kubeadm
 }
 
 function teardown_all(){
-# removes all of the kubernetes utilities, docker, container, helm, etc.
+  delete_namespaces
+  source "$working_directory"/reset/reset_kubeadm
+  source "$working_directory"/kubernetes/remove_kubernetes
+  source "$working_directory"/docker/remove_docker
+  source "$working_directory"/containerd/remove_containerd
+  source "$working_directory"/helm/remove_helm
+}
 
-# source "$working_directory"/reset/reset_kubeadm
-# source "$working_directory"/kubernetes/remove_kubernetes
-# source "$working_directory"/docker/remove_docker
-# source "$working_directory"/containerd/remove_containerd
-# source "$working_directory"/helm/remove_helm
+function delete_namespaces(){
+  echo "$yellow Deleting all of the namespace(s) except for 'kube-system' first... $reset"
+  kubectl delete all \
+                 --kubeconfig="$sudo_home"/.kube/config \
+                 --all \
+                 --all-namespaces
+  echo "$green Namespace(s) deleted... $reset"
 }
 
 main "$@"
