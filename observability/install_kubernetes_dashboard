@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
@@ -17,14 +19,14 @@ function error(){
 function kubernetes_dashboard(){
   if [[ -e /usr/bin/kubectl ]]
   then
-    source "$working_directory"/install_metrics
+    source "$working_directory"/observability/install_metrics
     echo "$yellow Installing Kubernetes dashboard... $reset"
     kubectl apply --record \
                   --kubeconfig="$sudo_home"/.kube/config \
                   --filename=https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
     echo "$green Kubernetes dashboard installation complete... $reset"
   else
-    error "$red Please ensure that kubectl is installed and the Kubernetes metrics server deployment script exists as it is a required dependency... $reset"
+    error "$red Please ensure that 'kubectl' is installed and the Kubernetes metrics server deployment script exists as it is a required dependency... $reset"
     exit 1
   fi
 }

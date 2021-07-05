@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1091
 set -euo pipefail
-
+# colour variables
 reset=$(tput sgr0)
 red=$(tput bold && tput setaf 1)
 green=$(tput bold && tput setaf 2)
 yellow=$(tput bold && tput setaf 3)
+# useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
@@ -13,27 +15,86 @@ function error(){
   echo "[$date_time]: $*" >&2
 }
 
-# https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/
-function cilium_init(){
-  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
+function main(){
+  echo "$yellow Checking for Helm first as it is a pre-requisite... $reset"
+  if [[ -e /usr/local/bin/helm ]]
   then
-    echo "$yellow Initialising the control plane... $reset"
-    kubeadm init
-    source "$working_directory"/kubernetes/kubectl_configure
-    echo "$yellow Installing Cilium... $reset"
-    sleep 3s
-    kubectl apply --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/install/kubernetes/quick-install.yaml
-    echo "$yellow Enabling Hubble for cluster-wide visibility... $reset"
-    kubectl apply --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=https://raw.githubusercontent.com/cilium/cilium/master/install/kubernetes/quick-hubble-install.yaml
-     echo "$green Cilium installation complete... $reset"
+    echo "$yellow Found Helm... $reset"
+    install_cilium_cli
   else
-    error "$red Please ensure that kubeadm and kubectl are installed first... $reset"
+    echo "$yellow Installing Helm first... $reset"
+    source "$working_directory"/helm/install_helm
+    install_cilium_cli
+  fi
+}
+
+function install_cilium_cli(){
+  echo "$yellow Installing Cilium CLI first... $reset"
+  curl --location \
+       --remote-name-all \
+       https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
+  # local variable
+  local verify_cilium_cli
+  verify_cilium_cli=$(sha256sum --check cilium-linux-amd64.tar.gz.sha256sum | awk '{print $2}')
+  if [[ $verify_cilium_cli == "OK" ]]
+  then
+    echo "$yellow Moving Cilium CLI binary to '/usr/local/bin'... $reset"
+    tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
+    echo "$yellow Deleting the downloaded archive and checksum... $reset"
+    rm --recursive --verbose cilium-linux-amd64.tar.gz{,.sha256sum}
+    echo "$green Cilium CLI binary installation complete... $reset"
+    cilium_init
+  else
+    error "$red 'sha256sum' check is invalid, ensure that the binary has not been tampered with first... $reset"
     exit 1
   fi
 }
 
-cilium_init "$@"
+# https://docs.cilium.io/en/v1.10/gettingstarted/k8s-install-helm/
+# https://github.com/cilium/cilium/tree/master/install/kubernetes/cilium
+function cilium_init(){
+  echo "$yellow Installing Cilium through the Helm chart... $reset"
+  if [[ -e /usr/bin/kubeadm ]]
+  then
+    echo "$yellow Initialising the control plane... $reset"
+    kubeadm init
+    source "$working_directory"/kubernetes/kubectl_configure
+    echo "$yellow Adding the Cilium repository... $reset"
+    helm repo add cilium https://helm.cilium.io/ \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --force-update \
+      --debug
+    helm repo update \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --debug
+    echo "$yellow Listing and searching for the charts in the Cilium repository... $reset"
+    helm repo list \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug \
+      | grep "https://helm.cilium.io/"
+    helm search repo cilium \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --debug
+     echo "$yellow Installing the Cilium Helm chart... $reset"
+     helm install cilium/cilium \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --output=table \
+      --namespace=kube-system \
+      --atomic \
+      --debug \
+      --generate-name \
+      --set debug.enabled=true \
+      --set nodeinit.restartPods=true
+     echo "$green Cilium Helm chart installation completed... $reset"
+     echo "$yellow To validate the Cilium deployment, a recommendation would be to run the following commands after the deployment; $reset" 
+     echo "$yellow 'cilium status'... $reset"
+     echo "$yellow 'cilium connectivity test'... $reset"
+  else
+    error "$red Please ensure that 'kubeadm' is installed first... $reset"
+    exit 1
+  fi
+}
+
+main "$@"

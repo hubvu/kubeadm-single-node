@@ -13,46 +13,46 @@ function error(){
   echo "[$date_time]: $*" >&2
 }
 
-# https://github.com/grafana/helm-charts
-function install_grafana(){
-  echo "$yellow Installing Grafana through the community Helm chart... $reset"
+# https://open-policy-agent.github.io/gatekeeper/website/docs/install/
+# https://github.com/open-policy-agent/gatekeeper/tree/master/charts/gatekeeper
+function install_opa_gatekeeper(){
+  echo "$yellow Installing Open Policy Agent - Gatekeeper through the Helm chart... $reset"
   if [[ -e /usr/local/bin/helm ]]
   then
-    echo "$yellow Adding the Grafrana repository... $reset"
-    helm repo add grafana https://grafana.github.io/helm-charts \
+    echo "$yellow Adding the Open Policy Agent - Gatekeeper repository... $reset"
+    helm repo add gatekeeper https://open-policy-agent.github.io/gatekeeper/charts \
       --kubeconfig="$sudo_home"/.kube/config \
       --force-update \
       --debug
     helm repo update \
       --kubeconfig="$sudo_home"/.kube/config \
-      --debug     
-    echo "$yellow Listing and searching for the charts in the Grafana repository... $reset"
+      --debug
+    echo "$yellow Listing and searching for the chart in the Open Policy Agent - Gatekeeper repository... $reset"
     helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug \
-      | grep "https://grafana.github.io/helm-charts"
-    helm search repo grafana \
+      | grep "https://open-policy-agent.github.io/gatekeeper/charts"
+    helm search repo gatekeeper \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
-     echo "$yellow Installing the Grafana Helm chart... $reset"
-     helm install grafana/grafana \
+     echo "$yellow Installing the Open Policy Agent - Gatekeeper Helm chart... $reset"
+     helm install gatekeeper/gatekeeper \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
-      --namespace=grafana \
+      --namespace=gatekeeper-system \
       --create-namespace \
       --atomic \
       --debug \
       --generate-name \
-      --set sidecar.dashboards.enabled=true \
-      --set sidecar.datasources.enabled=true \
-      --set imageRenderer.enabled=true
-     echo "$green Grafana Helm chart installation completed... $reset"
+      --set logDenies=true \
+      --set logLevel=DEBUG
+     echo "$green Open Policy Agent - Gatekeeper Helm chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1
   fi
 }
 
-install_grafana "$@"
+install_opa_gatekeeper "$@"
