@@ -21,7 +21,7 @@ function schedule_pods(){
                   --kubeconfig="$sudo_home"/.kube/config \
                   --all \
                   node-role.kubernetes.io/master-
-	  echo "$green Nodes are now untainted, it should be now possible to schedule pods on all of the nodes... $reset"
+	  echo "$green Nodes are now untainted, it should be now possible to schedule pods on all of the nodes, including the master node... $reset"
   else
     error "$red Please ensure that 'kubectl' is installed first... $reset"
     exit 1
