@@ -46,6 +46,7 @@ function install_falco(){
       --debug \
       --generate-name \
       --set auditLog.enabled=true \
+      --set ebpf.enabled=true \
       --set falco.logLevel=debug
      echo "$green Falco Security Helm chart installation completed... $reset"
   else
