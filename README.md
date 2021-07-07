@@ -8,10 +8,16 @@
 
 * 
 
-# Dependencies
+### Dependencies
 
-* Bash - https://www.gnu.org/software/bash/
-* Helm - https://helm.sh/
+* Some required utilities to ensure that the scripts execute successfully.
+  * `bash`
+  * `pwgen`
+  * `tar`
+  * `curl`
+  * `bash-completion`
+
+
 
 
 
