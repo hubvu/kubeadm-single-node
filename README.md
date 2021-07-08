@@ -10,7 +10,8 @@
   * `flannel` 
   * `kube-router` 
   * `weavenet`
-* After bootstrapping and creating the Kubernetes cluster, there is an option to install useful optional tooling, such as;
+* After bootstrapping and creating the Kubernetes cluster, there is an option to install useful tooling, such as;
+  * `helm` 
   * `kubernetes-dashboard` 
   * `kubernetes-metrics-server` 
   * `grafana` 
@@ -18,7 +19,6 @@
   * `weavescope`
   * `falco` 
   * `gatekeeper` 
-  * `helm` 
 * For more information on how the bash scripts are organised, please review the [Architecture](./ARCHICTECTURE.md) document.
 
 ### Why?
@@ -38,10 +38,15 @@
 
 * 
 
+### Resource Requirements
+
+* 
+
 ### Supported Distributions
 
 * `debian-10`
 * `centos-8-stream`
+
 
 ### Contributing
 
