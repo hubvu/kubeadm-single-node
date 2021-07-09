@@ -1,5 +1,7 @@
 ## Single Node Kubernetes Cluster
 
+
+
 ### What is this?
 
 * A collection of bash scripts that automates the installation of a Kubernetes cluster onto a single node.
@@ -36,7 +38,25 @@
 
 ### Quickstart
 
-* 
+```
+# clone the repository
+$ git clone git@github.com:hubvu/kubeadm-single-node.git
+
+# navigate into the directory
+$ cd kubeadm-single-node/
+
+# make 'main', 'optional' and 'teardown' into executable files
+$ chmod +x main optional teardown
+
+# run 'main' to start the Kubernetes cluster deployment
+$ sudo ./main
+
+# run 'optional' to install useful tools
+$ sudo ./optional
+
+# run 'teardown' to destroy a cluster deployment
+$ sudo ./teardown
+```
 
 ### Resource Requirements
 
@@ -47,10 +67,6 @@
 * `debian-10`
 * `centos-8-stream`
 
-
 ### Contributing
 
 * Contribution guidelines for this project can be found in [Contributing](./CONTRIBUTING.md) document.
-
-
-
