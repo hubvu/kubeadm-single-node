@@ -1,7 +1,6 @@
 ## Single Node Kubernetes Cluster
 
 
-
 ### What is this?
 
 * A collection of bash scripts that automates the installation of a Kubernetes cluster onto a single node.
@@ -70,3 +69,7 @@ $ sudo ./teardown
 ### Contributing
 
 * Contribution guidelines for this project can be found in [Contributing](./CONTRIBUTING.md) document.
+
+### License
+
+* Licenced under the [MIT License](./LICENSE.md).
