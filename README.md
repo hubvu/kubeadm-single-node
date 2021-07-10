@@ -1,5 +1,10 @@
 ## Single Node Kubernetes Cluster
 
+<p align="center">
+  <img alt="Bash Logo " width="150" height="100" src="./assets/bash.svg">
+  <img alt="Plus Sign Logo" width="50" height="100" src="./assets/plus.svg">
+  <img alt="Kubernets Logo" width="150" height="100" src="./assets/kubernetes.svg">
+</p>
 
 ### What is this?
 
@@ -20,7 +25,7 @@
   * `weavescope`
   * `falco` 
   * `gatekeeper` 
-* For more information on how the bash scripts are organised, please review the [Architecture](./ARCHICTECTURE.md) document.
+* For more information on how the bash scripts are organised, please review the [Architecture](./ARCHITECTURE.md) document.
 
 ### Why?
 
@@ -53,7 +58,7 @@ $ sudo ./main
 # run 'optional' to install useful tools
 $ sudo ./optional
 
-# run 'teardown' to destroy a cluster deployment
+# run 'teardown' to destroy the Kubernetes cluster deployment
 $ sudo ./teardown
 ```
 
