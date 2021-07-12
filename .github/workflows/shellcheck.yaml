@@ -1,0 +1,23 @@
+name: ShellCheck - Shell script static analysis tool
+
+# only trigger the action to the master/main branch on push and pull_request
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+
+    steps:
+      # Important: This sets up your GITHUB_WORKSPACE environment variable
+      - uses: actions/checkout@v2
+        
+      - name: Run ShellCheck
+        uses: azohra/shell-linter@latest
+          path: "container-network-interfaces,helm,observability,reset,security,main,optional,teardown,container-runtimes/docker/install_docker,container-runtimes/docker/remove_docker,container-runtimes/containerd/install_containerd,container-runtimes/containerd/remove_containerd,kubernetes/install_kubernetes,kubernetes/kubectl_configure,kubernetes/remove_kubernetes,kubernetes/schedule_pods"
