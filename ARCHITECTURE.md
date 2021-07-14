@@ -2,7 +2,6 @@
 - [Architecture](#architecture)
   - [Overview](#overview)
     - [Tree Organisation](#tree-organisation)
-  - [Diagram Overview](#diagram-overview)
 
 ### Overview
 
@@ -21,52 +20,48 @@
 
 #### Tree Organisation
 
+* Below is a quick overview of how the directory is organised and brief file descriptions.
+
 ```yaml
 .
 ├── container-network-interfaces
-│   ├── install_calico                    #
-│   ├── install_cilium                    #
-│   ├── install_flannel                   #
-│   ├── install_kube_router               #
-│   └── install_weavenet                  #
+│   ├── install_calico                    # script to install calico > https://github.com/projectcalico/calico
+│   ├── install_cilium                    # script to install cilium > https://github.com/cilium/cilium
+│   ├── install_flannel                   # script to install flannel > https://github.com/flannel-io/flannel
+│   ├── install_kube_router               # script to install kube-router > https://github.com/cloudnativelabs/kube-router
+│   └── install_weavenet                  # script to install weave > https://github.com/weaveworks/weave
 ├── container-runtimes
 │   ├── containerd
-│   │   ├── 99-kubernetes-cri.conf        #
-│   │   ├── containerd.conf               #
-│   │   ├── install_containerd            #
-│   │   └── remove_containerd             #
+│   │   ├── 99-kubernetes-cri.conf        # sysctl parameters file for iptables to see bridged traffic
+│   │   ├── containerd.conf               # load overlay and br_netfilter kernel modules 
+│   │   ├── install_containerd            # script to install containerd
+│   │   └── remove_containerd             # script to remove containerd
 │   └── docker
-│       ├── daemon.json                   #
-│       ├── install_docker                #
-│       └── remove_docker                 #
+│       ├── daemon.json                   # configure a cgroup and log driver
+│       ├── install_docker                # script to install docker
+│       └── remove_docker                 # script to remove docker
 ├── helm
-│   ├── install_helm                      #
-│   └── remove_helm                       #
+│   ├── install_helm                      # script to install helm
+│   └── remove_helm                       # script to remove helm
 ├── kubernetes
-│   ├── install_kubernetes                #
-│   ├── kubectl_configure                 #
-│   ├── kubernetes.list                   #
-│   ├── kubernetes.repo                   #
-│   ├── remove_kubernetes                 #
-│   └── schedule_pods                     #
+│   ├── install_kubernetes                # script to install core kubernetes tooling
+│   ├── kubectl_configure                 # script to configure kubectl for usage
+│   ├── kubernetes.list                   # kubernetes repository path
+│   ├── kubernetes.repo                   # kubernetes repository configuration
+│   ├── remove_kubernetes                 # script to remove kubernetes
+│   └── schedule_pods                     # script to allow pods to be scheduled on a master node
 ├── observability
-│   ├── install_grafana                   #
-│   ├── install_kubernetes_dashboard      #
-│   ├── install_metrics                   #
-│   ├── install_prometheus                #
-│   └── install_weavescope                #
+│   ├── install_grafana                   # script to install grafana > https://github.com/grafana/grafana
+│   ├── install_kubernetes_dashboard      # script to install kubernetes dashboard > https://github.com/kubernetes/dashboard
+│   ├── install_metrics                   # script to install metrics server > https://github.com/kubernetes-sigs/metrics-server
+│   ├── install_prometheus                # script to install prometheus > https://github.com/prometheus/prometheus
+│   └── install_weavescope                # script to install weavescope > https://github.com/weaveworks/scope
 ├── reset
-│   └── reset_kubeadm                     #
+│   └── reset_kubeadm                     # script to reset a kubernetes cluster using kubeadm
 ├── security
-│   ├── install_falco                     #
-│   └── install_opa_gatekeeper            #
-├── main                                  #
-├── optional                              #
-└── teardown                              #
+│   ├── install_falco                     # script to install falco security > https://github.com/falcosecurity/falco
+│   └── install_opa_gatekeeper            # script to install gatekeeper > https://github.com/open-policy-agent/gatekeeper
+├── main                                  # script to bootstrap and create a kubernetes cluster
+├── optional                              # script to install optional tools
+└── teardown                              # script to reset or remove kubernetes tools
 ```
- 
-
-### Diagram Overview
-
-
-* ...
