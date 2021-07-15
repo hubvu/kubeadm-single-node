@@ -20,4 +20,5 @@ jobs:
         
       - name: Run ShellCheck
         uses: azohra/shell-linter@latest
+        with:
           path: "container-network-interfaces,helm,observability,reset,security,main,optional,teardown,container-runtimes/docker/install_docker,container-runtimes/docker/remove_docker,container-runtimes/containerd/install_containerd,container-runtimes/containerd/remove_containerd,kubernetes/install_kubernetes,kubernetes/kubectl_configure,kubernetes/remove_kubernetes,kubernetes/schedule_pods"
