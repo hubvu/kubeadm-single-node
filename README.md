@@ -83,7 +83,7 @@ $ sudo ./teardown
 
 ### Contributing
 
-* Contribution guidelines for this project can be found in [Contributing](./CONTRIBUTING.md) document.
+* Contribution guidelines for this project can be found in the [Contributing](./CONTRIBUTING.md) document.
 
 ### Acknowledgments
 
