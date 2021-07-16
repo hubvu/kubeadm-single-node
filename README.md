@@ -62,7 +62,7 @@
 ### Quickstart & Usage
 
 ```bash
-# clone the rpository
+# clone the repository
 $ git clone git@github.com:hubvu/kubeadm-single-node.git
 
 # navigate into the directory
