@@ -53,8 +53,13 @@ function kubernetes_centos(){
   if [[ -e $working_directory/kubernetes/kubernetes.repo ]]
   then
     cp --verbose "$working_directory"/kubernetes/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
+    echo "$yellow Setting up the EPEL repository... $reset"
+    dnf install --assumeyes epel-release
+    dnf config-manager --set-enabled powertools
+    dnf update
     echo "$yellow Installing useful dependencies... $reset"
     dnf install --assumeyes bash-completion \
+                            iproute-tc \
                             pwgen
     echo "$yellow Installing 'kubeadm', 'kubectl' and 'kubelet' [latest]... $reset"
     dnf update

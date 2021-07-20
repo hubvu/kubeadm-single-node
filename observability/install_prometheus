@@ -19,38 +19,38 @@ function install_prometheus(){
   if [[ -e /usr/local/bin/helm ]]
   then
     echo "$yellow Adding the Prometheus community & Kube State Metrics repositories... $reset"
-    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts \
+    /usr/local/bin/helm repo add prometheus-community https://prometheus-community.github.io/helm-charts \
       --kubeconfig="$sudo_home"/.kube/config \
       --force-update \
       --debug
-    helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics \
+    /usr/local/bin/helm repo add kube-state-metrics https://kubernetes.github.io/kube-state-metrics \
       --kubeconfig="$sudo_home"/.kube/config \
       --force-update \
       --debug
-    helm repo update \
+    /usr/local/bin/helm repo update \
       --kubeconfig="$sudo_home"/.kube/config \
       --debug
     echo "$yellow Listing and searching for the charts in the Prometheus community & Kube State Metrics repository... $reset"
-    helm repo list \
+    /usr/local/bin/helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug \
       | grep "https://prometheus-community.github.io/helm-charts"
-    helm search repo prometheus \
+    /usr/local/bin/helm search repo prometheus \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
-    helm repo list \
+    /usr/local/bin/helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug \
       | grep "https://kubernetes.github.io/kube-state-metrics"
-    helm search repo kube-state-metrics \
+    /usr/local/bin/helm search repo kube-state-metrics \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
     echo "$yellow Installing the Prometheus community Helm Chart... $reset"
-    helm install prometheus-community/prometheus \
+    /usr/local/bin/helm install prometheus-community/prometheus \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --namespace=prometheus \
