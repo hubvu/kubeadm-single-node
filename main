@@ -9,16 +9,14 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     install_base
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     install_base
   else
     error "$red Please ensure that you are using CentOS or Debian... $reset"
@@ -26,98 +24,96 @@ function main(){
   fi
 }
 
-function install_base(){
+function install_base() {
   PS3="$yellow Choose a container runtime for the cluster [Number]: $reset"
   options=("Docker" "Containerd" "Quit")
 
-  select container_runtime in "${options[@]}"
-  do
-	  case $container_runtime in
-	  "Docker" )
-		  source "$working_directory"/container-runtimes/docker/install_docker
-		  source "$working_directory"/kubernetes/install_kubernetes
-		  install_cni
-		  break
-		  ;;
-		"Containerd" )
-		  source "$working_directory"/container-runtimes/containerd/install_containerd
-		  source "$working_directory"/kubernetes/install_kubernetes
-		  install_cni
-		  break
-		  ;;
-    "Quit" )
-		  break
+  select container_runtime in "${options[@]}"; do
+    case $container_runtime in
+    "Docker")
+      source "$working_directory"/container-runtimes/docker/install_docker
+      source "$working_directory"/kubernetes/install_kubernetes
+      install_cni
+      break
       ;;
-		*) 
-      echo "$red Invalid option chosen, please try again... $reset" 
+    "Containerd")
+      source "$working_directory"/container-runtimes/containerd/install_containerd
+      source "$working_directory"/kubernetes/install_kubernetes
+      install_cni
+      break
+      ;;
+    "Quit")
+      break
+      ;;
+    *)
+      echo "$red Invalid option chosen, please try again... $reset"
       ;;
     esac
   done
 }
 
-function install_cni(){
+function install_cni() {
   PS3="$yellow Choose a container network interface for the cluster [Number]: $reset"
   options=("Calico" "Cilium" "Flannel" "Kube Router" "Weave Net" "Quit")
 
-  select container_network_interface in "${options[@]}"
-  do
+  select container_network_interface in "${options[@]}"; do
     case $container_network_interface in
-    "Calico" )
-       source "$working_directory"/container-network-interfaces/install_calico
-       source "$working_directory"/kubernetes/schedule_pods
-       install_optional
-       break
-       ;;
-    "Cilium" )
-       source "$working_directory"/container-network-interfaces/install_cilium
-       source "$working_directory"/kubernetes/schedule_pods
-       install_optional
-       break
-       ;;
-    "Flannel" )
-       source "$working_directory"/container-network-interfaces/install_flannel
-       source "$working_directory"/kubernetes/schedule_pods
-       install_optional
-       break
-       ;;
-    "Kube Router" )
-       source "$working_directory"/container-network-interfaces/install_kube_router
-       source "$working_directory"/kubernetes/schedule_pods
-       install_optional
-       break
-       ;;
-    "Weave Net" )
+    "Calico")
+      source "$working_directory"/container-network-interfaces/install_calico
+      source "$working_directory"/kubernetes/schedule_pods
+      install_optional
+      break
+      ;;
+    "Cilium")
+      source "$working_directory"/container-network-interfaces/install_cilium
+      source "$working_directory"/kubernetes/schedule_pods
+      install_optional
+      break
+      ;;
+    "Flannel")
+      source "$working_directory"/container-network-interfaces/install_flannel
+      source "$working_directory"/kubernetes/schedule_pods
+      install_optional
+      break
+      ;;
+    "Kube Router")
+      source "$working_directory"/container-network-interfaces/install_kube_router
+      source "$working_directory"/kubernetes/schedule_pods
+      install_optional
+      break
+      ;;
+    "Weave Net")
       source "$working_directory"/container-network-interfaces/install_weavenet
       source "$working_directory"/kubernetes/schedule_pods
       install_optional
       break
       ;;
-    "Quit" )
+    "Quit")
       break
       ;;
-    *) echo "$yellow Invalid option, please try again... $reset" 
+    *)
+      echo "$yellow Invalid option, please try again... $reset"
       ;;
-		esac
-	done
-} 
+    esac
+  done
+}
 
-function install_optional(){
+function install_optional() {
   PS3="$yellow Would you like to install optional tooling in your environment? [Number]: $reset"
   options=("Yes" "No")
 
-  select choice in "${options[@]}"
-  do
-	  case $choice in
-	  "Yes" )
-		  source "$working_directory"/optional
-		  break
-		  ;;
-		"No" )
-      echo "$green Exiting from the main script... $reset" 
-		  exit 1
-		  ;;
-		*) 
-      echo "$red Invalid option chosen, please try again... $reset" 
+  select choice in "${options[@]}"; do
+    case $choice in
+    "Yes")
+      source "$working_directory"/optional
+      break
+      ;;
+    "No")
+      echo "$green Exiting from the main script... $reset"
+      exit 1
+      ;;
+    *)
+      echo "$red Invalid option chosen, please try again... $reset"
       ;;
     esac
   done

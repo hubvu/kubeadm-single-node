@@ -8,16 +8,14 @@ yellow=$(tput bold && tput setaf 3)
 # useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     remove_docker_centos
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     remove_docker_debian
   else
     error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
@@ -25,11 +23,11 @@ function main(){
   fi
 }
 
-function remove_docker_centos(){
+function remove_docker_centos() {
   echo "$yellow Removing Docker CE [Community Edition]... $reset"
   dnf remove --assumeyes --noautoremove docker-ce \
-                                        docker-ce-cli \
-                                        containerd.io
+    docker-ce-cli \
+    containerd.io
   echo "$yellow Removing '/etc/yum.repos.d/docker.repo' file... $reset"
   rm --recursive --force --verbose /etc/yum.repos.d/docker.repo
   dnf update
@@ -37,11 +35,11 @@ function remove_docker_centos(){
   remove_docker_logrotate
 }
 
-function remove_docker_debian(){
+function remove_docker_debian() {
   echo "$yellow Removing Docker CE [Community Edition]... $reset"
   apt remove --yes docker-ce \
-                   docker-ce-cli \
-                   containerd.io
+    docker-ce-cli \
+    containerd.io
   echo "$yellow Removing Docker CE [Community Edition] repository... $reset"
   add-apt-repository --remove "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
   apt update
@@ -49,7 +47,7 @@ function remove_docker_debian(){
   remove_docker_logrotate
 }
 
-function remove_docker_logrotate(){
+function remove_docker_logrotate() {
   echo "$yellow Removing '/etc/docker/daemon.json' file... $reset"
   rm --recursive --force --verbose /etc/docker/daemon.json
   echo "$green Removal of '/etc/docker/daemon.json' completed... $reset"

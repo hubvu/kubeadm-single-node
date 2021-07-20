@@ -9,29 +9,26 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     kubernetes_prerequisites
     kubernetes_centos
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     kubernetes_prerequisites
     kubernetes_debian
   else
-    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset" 
+    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
     exit 1
   fi
 }
 
-function kubernetes_prerequisites(){
+function kubernetes_prerequisites() {
   echo "$yellow Setting up Kubernetes pre-requisites... $reset"
-  if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]
-  then
+  if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]; then
     echo "$yellow Copying the 'containerd.conf' file to '/etc/modules-load.d/'... $reset"
     cp --verbose "$working_directory"/container-runtimes/containerd/containerd.conf /etc/modules-load.d/containerd.conf
     echo "$yellow Ensuring that the required kernel modules are loaded first... $reset"
@@ -48,10 +45,9 @@ function kubernetes_prerequisites(){
   fi
 }
 
-function kubernetes_centos(){
+function kubernetes_centos() {
   echo "$yellow Setting up the Kubernetes repository... $reset"
-  if [[ -e $working_directory/kubernetes/kubernetes.repo ]]
-  then
+  if [[ -e $working_directory/kubernetes/kubernetes.repo ]]; then
     cp --verbose "$working_directory"/kubernetes/kubernetes.repo /etc/yum.repos.d/kubernetes.repo
     echo "$yellow Setting up the EPEL repository... $reset"
     dnf install --assumeyes epel-release
@@ -59,13 +55,13 @@ function kubernetes_centos(){
     dnf update
     echo "$yellow Installing useful dependencies... $reset"
     dnf install --assumeyes bash-completion \
-                            iproute-tc \
-                            pwgen
+      iproute-tc \
+      pwgen
     echo "$yellow Installing 'kubeadm', 'kubectl' and 'kubelet' [latest]... $reset"
     dnf update
     dnf install --assumeyes --disableexcludes=kubernetes kubeadm \
-                                                         kubectl \
-                                                         kubelet
+      kubectl \
+      kubelet
     echo "$green Installing 'kubeadm', 'kubectl' and 'kubelet' is completed... $reset"
   else
     error "$red Please ensure that the 'kubernetes.repo' file exists in the kubernetes directory first... $reset"
@@ -73,33 +69,32 @@ function kubernetes_centos(){
   fi
 }
 
-function kubernetes_debian(){
+function kubernetes_debian() {
   echo "$yellow Setting up the Kubernetes repository... $reset"
-  if [[ -e $working_directory/kubernetes/kubernetes.list ]]
-  then
+  if [[ -e $working_directory/kubernetes/kubernetes.list ]]; then
     apt update
     echo "$yellow Installing useful dependencies... $reset"
     apt install --yes apt-transport-https \
-                      curl \
-                      bash-completion \
-                      pwgen
+      curl \
+      bash-completion \
+      pwgen
     echo "$yellow Adding Google's GPG key... $reset"
     curl --fail \
-         --silent \
-         --show-error \
-         --location https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+      --silent \
+      --show-error \
+      --location https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
     echo "$yellow Setting up the Kubernetes repository... $reset"
     cp "$working_directory"/kubernetes/kubernetes.list /etc/apt/sources.list.d/kubernetes.list
     echo "$yellow Installing 'kubeadm', 'kubectl' and 'kubelet' [latest]... $reset"
     apt update
     apt install --yes kubeadm \
-                      kubectl \
-                      kubelet
+      kubectl \
+      kubelet
     echo "$yellow Ensuring that 'kubeadm', 'kubectl' and 'kubelet' packages are held from being installed, upgraded or removed... $reset"
     apt-mark hold kubelet \
-                  kubeadm \
-                  kubectl
-    echo "$green Installing 'kubeadm', 'kubectl' and 'kubelet' is completed... $reset" 
+      kubeadm \
+      kubectl
+    echo "$green Installing 'kubeadm', 'kubectl' and 'kubelet' is completed... $reset"
   else
     error "$red Please ensure that the 'kubernetes.list' file exists in the kubernetes directory first... $reset"
     exit 1

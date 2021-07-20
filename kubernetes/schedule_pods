@@ -9,19 +9,18 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function schedule_pods(){
-  if [[ -e /usr/bin/kubectl ]]
-  then
+function schedule_pods() {
+  if [[ -e /usr/bin/kubectl ]]; then
     echo "$yellow Removing 'node-role.kubernetes.io/master' taint from any nodes that may have it $red(not recommended for production environments)$yellow... $reset"
     kubectl taint nodes \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --all \
-                  node-role.kubernetes.io/master-
-	  echo "$green Nodes are now untainted, it should be now possible to schedule pods on all of the nodes, including the master node... $reset"
+      --kubeconfig="$sudo_home"/.kube/config \
+      --all \
+      node-role.kubernetes.io/master-
+    echo "$green Nodes are now untainted, it should be now possible to schedule pods on all of the nodes, including the master node... $reset"
   else
     error "$red Please ensure that 'kubectl' is installed first... $reset"
     exit 1

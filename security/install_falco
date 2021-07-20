@@ -9,15 +9,14 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
 # https://github.com/falcosecurity/charts/tree/master/falco
-function install_falco(){
+function install_falco() {
   echo "$yellow Installing Falco Security through the Helm chart... $reset"
-  if [[ -e /usr/local/bin/helm ]]
-  then
+  if [[ -e /usr/local/bin/helm ]]; then
     echo "$yellow Adding the Falco Security repository... $reset"
     /usr/local/bin/helm repo add falcosecurity https://falcosecurity.github.io/charts \
       --kubeconfig="$sudo_home"/.kube/config \
@@ -30,8 +29,8 @@ function install_falco(){
     /usr/local/bin/helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
-      --debug \
-      | grep "https://falcosecurity.github.io/charts"
+      --debug |
+      grep "https://falcosecurity.github.io/charts"
     /usr/local/bin/helm search repo falcosecurity \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \

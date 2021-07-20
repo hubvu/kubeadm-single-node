@@ -9,17 +9,15 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     containerd_prerequisites
     containerd_centos
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     containerd_prerequisites
     containerd_debian
   else
@@ -28,10 +26,9 @@ function main(){
   fi
 }
 
-function containerd_prerequisites(){
+function containerd_prerequisites() {
   echo "$yellow Setting up Containerd pre-requisites... $reset"
-  if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]
-  then
+  if [[ -e $working_directory/container-runtimes/containerd/containerd.conf && -e $working_directory/container-runtimes/containerd/99-kubernetes-cri.conf ]]; then
     echo "$yellow Copying the 'containerd.conf' file to '/etc/modules-load.d/'... $reset"
     cp "$working_directory"/container-runtimes/containerd/containerd.conf /etc/modules-load.d/containerd.conf
     echo "$yellow Ensuring that the required kernel modules are loaded first... $reset"
@@ -48,11 +45,11 @@ function containerd_prerequisites(){
   fi
 }
 
-function containerd_centos(){
+function containerd_centos() {
   echo "$yellow Setting up the Docker CE [Community Edition] repository to pull down Containerd... $reset"
   dnf install --assumeyes dnf-plugins-core \
-                          device-mapper-persistent-data \
-                          lvm2
+    device-mapper-persistent-data \
+    lvm2
   dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
   echo "$yellow Installing Containerd... $reset"
   dnf update
@@ -61,19 +58,19 @@ function containerd_centos(){
   containerd_start
 }
 
-function containerd_debian(){
+function containerd_debian() {
   echo "$yellow Setting up the Docker CE [Community Edition] repository... $reset"
   apt update
   apt install --yes apt-transport-https \
-                    ca-certificates \
-                    curl \
-                    gnupg-agent \
-                    software-properties-common
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
   echo "$yellow Adding Docker’s official GPG key... $reset"
   curl --fail \
-       --silent \
-       --show-error \
-       --location https://download.docker.com/linux/debian/gpg | apt-key add -
+    --silent \
+    --show-error \
+    --location https://download.docker.com/linux/debian/gpg | apt-key add -
   echo "$yellow Verifing that the key exists using the fingerprint... $reset"
   apt-key fingerprint 0EBFCD88
   echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
@@ -85,7 +82,7 @@ function containerd_debian(){
   containerd_start
 }
 
-function containerd_start(){
+function containerd_start() {
   echo "$yellow Configuring Containerd before running the service... $reset"
   mkdir --parents --verbose /etc/containerd
   containerd config default | tee /etc/containerd/config.toml

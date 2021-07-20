@@ -11,16 +11,13 @@ date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
     choose_teardown
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     choose_teardown
   else
     error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
@@ -28,37 +25,36 @@ function main(){
   fi
 }
 
-function choose_teardown(){
+function choose_teardown() {
   PS3="$yellow Please select a option [Number]: $reset"
   options=("Teardown Kubeadm" "Teardown Everything" "Quit")
 
-  select delete in "${options[@]}"
-  do
-	  case $delete in
-	  "Teardown Kubeadm" )
-		  teardown_kubeadm_only
-		  break
-		  ;;
-		"Teardown Everything" )
-		  teardown_all
-		  break
-		  ;;
-    "Quit" )
-		  break
+  select delete in "${options[@]}"; do
+    case $delete in
+    "Teardown Kubeadm")
+      teardown_kubeadm_only
+      break
       ;;
-		*) 
-      echo "$red Invalid option chosen, please try again... $reset" 
+    "Teardown Everything")
+      teardown_all
+      break
+      ;;
+    "Quit")
+      break
+      ;;
+    *)
+      echo "$red Invalid option chosen, please try again... $reset"
       ;;
     esac
   done
 }
 
-function teardown_kubeadm_only(){
+function teardown_kubeadm_only() {
   delete_namespaces
   source "$working_directory"/reset/reset_kubeadm
 }
 
-function teardown_all(){
+function teardown_all() {
   delete_namespaces
   source "$working_directory"/reset/reset_kubeadm
   source "$working_directory"/kubernetes/remove_kubernetes
@@ -67,12 +63,12 @@ function teardown_all(){
   source "$working_directory"/helm/remove_helm
 }
 
-function delete_namespaces(){
+function delete_namespaces() {
   echo "$yellow Deleting all of the namespace(s) except for 'kube-system' first... $reset"
   kubectl delete all \
-                 --kubeconfig="$sudo_home"/.kube/config \
-                 --all \
-                 --all-namespaces
+    --kubeconfig="$sudo_home"/.kube/config \
+    --all \
+    --all-namespaces
   echo "$green Namespace(s) deleted... $reset"
 }
 

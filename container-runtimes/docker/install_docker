@@ -9,16 +9,14 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     docker_centos
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     docker_debian
   else
     error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
@@ -26,46 +24,46 @@ function main(){
   fi
 }
 
-function docker_centos(){
+function docker_centos() {
   echo "$yellow Removing older versions of Docker installed, if any... $reset"
   dnf remove --assumeyes docker \
-                         docker-client \
-                         docker-client-latest \
-                         docker-common \
-                         docker-latest \
-                         docker-latest-logrotate \
-                         docker-logrotate \
-                         docker-engine
+    docker-client \
+    docker-client-latest \
+    docker-common \
+    docker-latest \
+    docker-latest-logrotate \
+    docker-logrotate \
+    docker-engine
   echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
   dnf install --assumeyes dnf-plugins-core
   dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
   echo "$yellow Installing Docker CE [Community Edition]... $reset"
   dnf update
   dnf install --assumeyes docker-ce \
-                          docker-ce-cli \
-                          containerd.io
+    docker-ce-cli \
+    containerd.io
   echo "$green Docker CE [Community Edition] installation completed... $reset"
   docker_start
 }
 
-function docker_debian(){
+function docker_debian() {
   echo "$yellow Removing older versions of Docker installed, if any... $reset"
   apt remove --yes docker \
-                   docker-engine \
-                   docker.io \
-                   runc
+    docker-engine \
+    docker.io \
+    runc
   echo "$yellow Setting up the Docker CE [Community Edition] repository... $reset"
   apt update
   apt install --yes apt-transport-https \
-                    ca-certificates \
-                    curl \
-                    gnupg-agent \
-                    software-properties-common
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common
   echo "$yellow Adding Docker’s official GPG key... $reset"
   curl --fail \
-       --silent \
-       --show-error \
-       --location https://download.docker.com/linux/debian/gpg | apt-key add -
+    --silent \
+    --show-error \
+    --location https://download.docker.com/linux/debian/gpg | apt-key add -
   echo "$yellow Verifing that the key exists using the fingerprint first... $reset"
   apt-key fingerprint 0EBFCD88
   echo "$yellow Setting up the stable repository for Docker CE [Community Edition]... $reset"
@@ -73,13 +71,13 @@ function docker_debian(){
   echo "$yellow Installing Docker CE [Community Edition]... $reset"
   apt update
   apt install --yes docker-ce \
-                    docker-ce-cli \
-                    containerd.io
+    docker-ce-cli \
+    containerd.io
   echo "$green Docker CE [Community Edition] installation completed... $reset"
   docker_start
 }
 
-function docker_start(){
+function docker_start() {
   echo "$yellow Configuring Docker & Containerd to startup on boot... $reset"
   systemctl enable docker.service containerd.service
   echo "$yellow Restarting Docker & Containerd... $reset"
@@ -87,10 +85,9 @@ function docker_start(){
   docker_logrotate
 }
 
-function docker_logrotate(){
+function docker_logrotate() {
   echo "$yellow Configuring Docker and automatic log-rotation... $reset"
-  if [[ -e $working_directory/container-runtimes/docker/daemon.json ]]
-  then
+  if [[ -e $working_directory/container-runtimes/docker/daemon.json ]]; then
     cp "$working_directory"/container-runtimes/docker/daemon.json /etc/docker/daemon.json
     echo "$yellow Restarting Docker & Containerd services... $reset"
     systemctl restart docker.service containerd.service
@@ -101,7 +98,7 @@ function docker_logrotate(){
   docker_non_root_user
 }
 
-function docker_non_root_user(){
+function docker_non_root_user() {
   echo "$yellow Configuring Docker to be used as a non-root user... $reset"
   groupadd --force docker
   usermod --append --groups docker "$SUDO_USER"

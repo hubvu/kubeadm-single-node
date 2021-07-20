@@ -10,18 +10,17 @@ date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 node_name=$(kubectl get nodes --kubeconfig="$sudo_home"/.kube/config | awk '{print $1}' | sed --quiet 2,3p)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function reset_kubeadm(){
-  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
-  then
+function reset_kubeadm() {
+  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]; then
     echo "$yellow Draining '$node_name' node first... $reset"
     kubectl drain "$node_name" --kubeconfig="$sudo_home"/.kube/config \
-                               --delete-emptydir-data \
-                               --force \
-                               --ignore-daemonsets
+      --delete-emptydir-data \
+      --force \
+      --ignore-daemonsets
     echo "$yellow Reseting 'kubeadm'... $reset"
     kubeadm reset --force
     echo "$yellow Removing '/etc/cni/net.d' directory which stores CNI configuration... $reset"
