@@ -8,16 +8,14 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     optional_helm
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     optional_helm
   else
     error "$red Please ensure that you are using CentOS or Debian... $reset"
@@ -25,99 +23,98 @@ function main(){
   fi
 }
 
-function optional_helm(){
+function optional_helm() {
   PS3="$yellow Would you like to install helm? [Number]: $reset"
   options=("Yes" "No" "Quit")
 
-  select choice in "${options[@]}"
-  do
-	  case $choice in
-	  "Yes" )
-		  source "$working_directory"/helm/install_helm
+  select choice in "${options[@]}"; do
+    case $choice in
+    "Yes")
+      source "$working_directory"/helm/install_helm
       install_observability
-		  break
-		  ;;
-		"No" )
-      install_observability 
-		  break
-		  ;;
-    "Quit" )
       break
       ;;
-		*) 
-      echo "$red Invalid option chosen, please try again... $reset" 
+    "No")
+      install_observability
+      break
+      ;;
+    "Quit")
+      break
+      ;;
+    *)
+      echo "$red Invalid option chosen, please try again... $reset"
       ;;
     esac
   done
 }
 
-function install_observability(){
+function install_observability() {
   PS3="$yellow Choose a observability solution for the cluster [Number]: $reset"
   options=("Kubernetes Dashboard" "Metrics Server" "WeaveScope" "Grafana" "Prometheus" "Choose Security Tools" "Quit")
 
-  select observability_choice in "${options[@]}"
-  do
+  select observability_choice in "${options[@]}"; do
     case $observability_choice in
-    "Kubernetes Dashboard" )
-       source "$working_directory"/observability/install_kubernetes_dashboard
-       install_security
-       break
-       ;;
-    "Metrics Server" )
-       source "$working_directory"/observability/install_metrics
-       install_security
-       break
-       ;;
-    "WeaveScope" )
-       source "$working_directory"/observability/install_weavescope
-       install_security
-       break
-       ;;
-    "Grafana" )
-       source "$working_directory"/observability/install_grafana
-       install_security
-       break
-       ;;
-    "Prometheus" )
+    "Kubernetes Dashboard")
+      source "$working_directory"/observability/install_kubernetes_dashboard
+      install_security
+      break
+      ;;
+    "Metrics Server")
+      source "$working_directory"/observability/install_metrics
+      install_security
+      break
+      ;;
+    "WeaveScope")
+      source "$working_directory"/observability/install_weavescope
+      install_security
+      break
+      ;;
+    "Grafana")
+      source "$working_directory"/observability/install_grafana
+      install_security
+      break
+      ;;
+    "Prometheus")
       source "$working_directory"/observability/install_prometheus
       install_security
       break
       ;;
-    "Choose Security Tools" )
+    "Choose Security Tools")
       install_security
       break
       ;;
-    "Quit" )
+    "Quit")
       break
       ;;
-    *) echo "$yellow Invalid option, please try again... $reset" 
+    *)
+      echo "$yellow Invalid option, please try again... $reset"
       ;;
-		esac
-	done
+    esac
+  done
 }
 
-function install_security(){
+function install_security() {
   PS3="$yellow Choose a security solution for the cluster [Number]: $reset"
   options=("OPA Gatekeeper" "Falco" "Quit")
 
-  select security_choice in "${options[@]}"
-  do
+  select security_choice in "${options[@]}"; do
     case $security_choice in
-    "OPA Gatekeeper" )
-       source "$working_directory"/security/install_opa_gatekeeper
-       break
-       ;;
-    "Falco" )
-       source "$working_directory"/security/install_falco
-       break
-       ;;
-    "Quit" )
+    "OPA Gatekeeper")
+      source "$working_directory"/security/install_opa_gatekeeper
       break
       ;;
-    *) echo "$yellow Invalid option, please try again... $reset" 
+    "Falco")
+      source "$working_directory"/security/install_falco
+      break
       ;;
-		esac
-	done
+    "Quit")
+      break
+      ;;
+    *)
+      echo "$yellow Invalid option, please try again... $reset"
+      ;;
+    esac
+  done
 }
 
 main "$@"
