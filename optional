@@ -15,7 +15,7 @@ function error(){
 function main(){
   if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
   then
-    install_observability
+    optional_helm
   elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
   then
     optional_helm
@@ -53,7 +53,7 @@ function optional_helm(){
 
 function install_observability(){
   PS3="$yellow Choose a observability solution for the cluster [Number]: $reset"
-  options=("Kubernetes Dashboard" "Metrics Server" "WeaveScope" "Grafana" "Prometheus" "Quit")
+  options=("Kubernetes Dashboard" "Metrics Server" "WeaveScope" "Grafana" "Prometheus" "Choose Security Tools" "Quit")
 
   select observability_choice in "${options[@]}"
   do
@@ -80,6 +80,10 @@ function install_observability(){
        ;;
     "Prometheus" )
       source "$working_directory"/observability/install_prometheus
+      install_security
+      break
+      ;;
+    "Choose Security Tools" )
       install_security
       break
       ;;
