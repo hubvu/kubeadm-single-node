@@ -8,6 +8,9 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/hubvu/kubeadm-single-node/actions" alt="ShellCheck">
+    <img src="https://github.com/hubvu/kubeadm-single-node/workflows/shellcheck.yaml/badge.svg?branch=main">
+  </a>
   <a href="https://github.com/hubvu/kubeadm-single-node/releases" alt="GitHub Release">
     <img src="https://img.shields.io/github/v/release/hubvu/kubeadm-single-node">
   </a>
@@ -30,9 +33,9 @@
   - [Resource Requirements](#resource-requirements)
   - [Dependencies](#dependencies)
   - [Supported Distributions](#supported-distributions)
-  - [Quickstart & Usage](#quickstart--usage)
+  - [Quick-start & Usage](#quick-start--usage)
   - [Contributing](#contributing)
-  - [Acknowledgments](#acknowledgments)
+  - [Acknowledgements](#acknowledgements)
   - [License](#license)
 
 ### What is this?
@@ -43,23 +46,23 @@
   * `calico` , `cilium` , `flannel` , `kube-router` , `weavenet`
 * After bootstrapping and creating the Kubernetes cluster, there is an option to install useful tooling, such as;
   * `helm` , `kubernetes-dashboard` , `kubernetes-metrics-server` , `grafana` , `prometheus` , `weavescope` , `falco` , `gatekeeper` 
-* For more information on how the bash scripts are organised, please review the [Architecture](./ARCHITECTURE.md) document.
+* For more information on how the bash scripts are organised, review the [Architecture](./ARCHITECTURE.md) document.
 
 ### Resource Requirements
 
-* For minimum `kubeadm` resource requirements, please refer to the [official `kubeadm` installation guide](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/).
+* For minimum `kubeadm` resource requirements, refer to the [official `kubeadm` installation guide](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/).
 
 ### Dependencies
 
 * Required utilities to ensure that the scripts execute successfully.
-  * `bash` , `pwgen` , `tar` , `curl` , `bash-completion`
+  * `bash` , `pwgen` , `tar` , `curl` , `bash-completion`, `epel-release`
 
 ### Supported Distributions
 
 * Tested on;
   * `debian-10` , `centos-8-stream`
 
-### Quickstart & Usage
+### Quick-start & Usage
 
 ```bash
 # clone the repository
@@ -85,11 +88,11 @@ $ sudo ./teardown
 
 * Contribution guidelines for this project can be found in the [Contributing](./CONTRIBUTING.md) document.
 
-### Acknowledgments
+### Acknowledgements
 
 * [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html).
-* [ShellCheck](https://github.com/koalaman/shellcheck)
-* [Shell Linter - GitHub Action](https://github.com/azohra/shell-linter)
+* [ShellCheck](https://github.com/koalaman/shellcheck).
+* [Shell Linter - GitHub Action](https://github.com/azohra/shell-linter).
 * [SVG Logos](https://github.com/gilbarbara/logos).
 
 
