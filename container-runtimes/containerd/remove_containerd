@@ -8,26 +8,24 @@ yellow=$(tput bold && tput setaf 3)
 # useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     remove_containerd_prerequisites
     remove_containerd_centos
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     remove_containerd_prerequisites
     remove_containerd_debian
   else
-    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"    
+    error "$red Please ensure that you are using 'CentOS' or 'Debian' as your host operating system first... $reset"
     exit 1
   fi
 }
 
-function remove_containerd_prerequisites(){
+function remove_containerd_prerequisites() {
   echo "$yellow Removing '/etc/modules-load.d/containerd.conf' file... $reset"
   rm --recursive --force --verbose /etc/modules-load.d/containerd.conf
   echo "$yellow Removing the required kernel modules that are loaded... $reset"
@@ -40,7 +38,7 @@ function remove_containerd_prerequisites(){
   echo "$green Removal of Containerd pre-requisites completed... $reset"
 }
 
-function remove_containerd_centos(){
+function remove_containerd_centos() {
   echo "$yellow Removing Containerd... $reset"
   dnf remove --assumeyes --noautoremove containerd.io
   echo "$yellow Removing '/etc/yum.repos.d/docker.repo' file... $reset"
@@ -50,7 +48,7 @@ function remove_containerd_centos(){
   remove_containerd_configuration_file
 }
 
-function remove_containerd_debian(){
+function remove_containerd_debian() {
   echo "$yellow Removing Containerd... $reset"
   apt remove --yes containerd.io
   echo "$yellow Removing Containerd repository... $reset"
@@ -60,7 +58,7 @@ function remove_containerd_debian(){
   remove_containerd_configuration_file
 }
 
-function remove_containerd_configuration_file(){
+function remove_containerd_configuration_file() {
   echo "$yellow Removing '/etc/containerd/config.toml' file... $reset"
   rm --recursive --force --verbose /etc/containerd
   echo "$green Removal of '/etc/containerd/config.toml' completed... $reset"

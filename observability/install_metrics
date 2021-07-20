@@ -9,18 +9,16 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function main(){
-  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]
-  then
+function main() {
+  if [[ -e /usr/bin/rpm && -e /usr/bin/dnf && -e /usr/bin/yum && -e /etc/centos-release ]]; then
     echo "$yellow Ensuring that 'jq' is installed first... $reset"
     dnf install --assumeyes jq
     metrics_server
-  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]
-  then
+  elif [[ -e /usr/bin/apt && -e /usr/bin/dpkg && -e /etc/os-release && -e /etc/debian_version && ! -e /usr/bin/snap ]]; then
     echo "$yellow Ensuring that 'jq' is installed first... $reset"
     apt install --yes jq
     metrics_server
@@ -31,36 +29,35 @@ function main(){
 }
 
 # https://github.com/kubernetes-sigs/metrics-server#installation
-function metrics_server(){
-  if [[ -e /usr/bin/kubectl ]]
-  then
+function metrics_server() {
+  if [[ -e /usr/bin/kubectl ]]; then
     echo "$yellow Installing Kubernetes metrics server... $reset"
     kubectl apply --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+      --kubeconfig="$sudo_home"/.kube/config \
+      --filename=https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
     echo "$green Kubernetes metrics server installation complete... $reset"
     echo "$yellow Get the arguments output of the Kubernetes metrics server deployment... $reset"
     sleep 3s
     kubectl get deployment metrics-server \
-                --kubeconfig="$sudo_home"/.kube/config \
-                --namespace=kube-system \
-                --output=json \
-                | jq '.spec.template.spec.containers[0].args'
+      --kubeconfig="$sudo_home"/.kube/config \
+      --namespace=kube-system \
+      --output=json |
+      jq '.spec.template.spec.containers[0].args'
     echo "$yellow Patching the Kubernetes metrics server deployment with [--kubelet-insecure-tls=true] argument $red(not recommended for production environments)$yellow... $reset"
     kubectl patch deployment metrics-server \
-                  --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --namespace=kube-system \
-                  --type="json" \
-                  --patch='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls=true"}]'
+      --record \
+      --kubeconfig="$sudo_home"/.kube/config \
+      --namespace=kube-system \
+      --type="json" \
+      --patch='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls=true"}]'
     echo "$green Kubernetes metrics server patch complete... $reset"
     echo "$yellow Checking the arguments output of the Kubernetes metrics server deployment... $reset"
     sleep 3s
     kubectl get deployment metrics-server \
-                --kubeconfig="$sudo_home"/.kube/config \
-                --namespace=kube-system \
-                --output=json \
-                | jq '.spec.template.spec.containers[0].args'
+      --kubeconfig="$sudo_home"/.kube/config \
+      --namespace=kube-system \
+      --output=json |
+      jq '.spec.template.spec.containers[0].args'
   else
     error "$red Please ensure that 'kubectl' is installed first... $reset"
     exit 1

@@ -7,11 +7,11 @@ yellow=$(tput bold && tput setaf 3)
 # useful variables
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
-function helm_remove(){
+function helm_remove() {
   echo "$yellow Removing Helm from '/usr/local/bin/helm' path... $reset"
   rm --recursive --force --verbose /usr/local/bin/helm
   echo "$green Removal of Helm is completed... $reset"

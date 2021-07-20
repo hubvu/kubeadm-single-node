@@ -11,19 +11,18 @@ date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
 # https://github.com/kubernetes/dashboard#install
-function kubernetes_dashboard(){
-  if [[ -e /usr/bin/kubectl ]]
-  then
+function kubernetes_dashboard() {
+  if [[ -e /usr/bin/kubectl ]]; then
     source "$working_directory"/observability/install_metrics
     echo "$yellow Installing Kubernetes dashboard... $reset"
     kubectl apply --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+      --kubeconfig="$sudo_home"/.kube/config \
+      --filename=https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
     echo "$green Kubernetes dashboard installation complete... $reset"
   else
     error "$red Please ensure that 'kubectl' is installed and the Kubernetes metrics server deployment script exists as it is a required dependency... $reset"

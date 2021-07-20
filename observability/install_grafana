@@ -9,15 +9,14 @@ yellow=$(tput bold && tput setaf 3)
 date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
 # https://github.com/grafana/helm-charts
-function install_grafana(){
+function install_grafana() {
   echo "$yellow Installing Grafana through the community Helm chart... $reset"
-  if [[ -e /usr/local/bin/helm ]]
-  then
+  if [[ -e /usr/local/bin/helm ]]; then
     echo "$yellow Adding the Grafrana repository... $reset"
     /usr/local/bin/helm repo add grafana https://grafana.github.io/helm-charts \
       --kubeconfig="$sudo_home"/.kube/config \
@@ -25,19 +24,19 @@ function install_grafana(){
       --debug
     /usr/local/bin/helm repo update \
       --kubeconfig="$sudo_home"/.kube/config \
-      --debug     
+      --debug
     echo "$yellow Listing and searching for the charts in the Grafana repository... $reset"
     /usr/local/bin/helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
-      --debug \
-      | grep "https://grafana.github.io/helm-charts"
+      --debug |
+      grep "https://grafana.github.io/helm-charts"
     /usr/local/bin/helm search repo grafana \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
-     echo "$yellow Installing the Grafana Helm chart... $reset"
-     /usr/local/bin/helm install grafana/grafana \
+    echo "$yellow Installing the Grafana Helm chart... $reset"
+    /usr/local/bin/helm install grafana/grafana \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --namespace=grafana \

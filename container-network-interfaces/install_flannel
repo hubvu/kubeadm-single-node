@@ -11,22 +11,21 @@ date_time=$(date +'%d-%m-%Y-T%H:%M:%S%z')
 working_directory=$(pwd)
 sudo_home=$(getent passwd "$SUDO_USER" | cut --delimiter=: --fields=6)
 
-function error(){
+function error() {
   echo "[$date_time]: $*" >&2
 }
 
 # https://github.com/coreos/flannel#getting-started-on-kubernetes
-function flannel_init(){
-  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]
-  then
+function flannel_init() {
+  if [[ -e /usr/bin/kubectl && -e /usr/bin/kubeadm ]]; then
     echo "$yellow Initialising the control plane and allocating a pod network CIDR - [10.244.0.0/16] - for Flannel... $reset"
     kubeadm init --pod-network-cidr=10.244.0.0/16
     source "$working_directory"/kubernetes/kubectl_configure
     echo "$yellow Installing Flannel... $reset"
     sleep 3s
     kubectl apply --record \
-                  --kubeconfig="$sudo_home"/.kube/config \
-                  --filename=https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+      --kubeconfig="$sudo_home"/.kube/config \
+      --filename=https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
     echo "$green Flannel installation complete... $reset"
   else
     error "$red Please ensure that 'kubeadm' and 'kubectl' are installed first... $reset"
