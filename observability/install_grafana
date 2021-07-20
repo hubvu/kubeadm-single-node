@@ -19,25 +19,25 @@ function install_grafana(){
   if [[ -e /usr/local/bin/helm ]]
   then
     echo "$yellow Adding the Grafrana repository... $reset"
-    helm repo add grafana https://grafana.github.io/helm-charts \
+    /usr/local/bin/helm repo add grafana https://grafana.github.io/helm-charts \
       --kubeconfig="$sudo_home"/.kube/config \
       --force-update \
       --debug
-    helm repo update \
+    /usr/local/bin/helm repo update \
       --kubeconfig="$sudo_home"/.kube/config \
       --debug     
     echo "$yellow Listing and searching for the charts in the Grafana repository... $reset"
-    helm repo list \
+    /usr/local/bin/helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug \
       | grep "https://grafana.github.io/helm-charts"
-    helm search repo grafana \
+    /usr/local/bin/helm search repo grafana \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
      echo "$yellow Installing the Grafana Helm chart... $reset"
-     helm install grafana/grafana \
+     /usr/local/bin/helm install grafana/grafana \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --namespace=grafana \
@@ -48,7 +48,7 @@ function install_grafana(){
       --set sidecar.dashboards.enabled=true \
       --set sidecar.datasources.enabled=true \
       --set imageRenderer.enabled=true
-     echo "$green Grafana Helm chart installation completed... $reset"
+    echo "$green Grafana Helm chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1

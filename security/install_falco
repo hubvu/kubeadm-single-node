@@ -19,25 +19,25 @@ function install_falco(){
   if [[ -e /usr/local/bin/helm ]]
   then
     echo "$yellow Adding the Falco Security repository... $reset"
-    helm repo add falcosecurity https://falcosecurity.github.io/charts \
+    /usr/local/bin/helm repo add falcosecurity https://falcosecurity.github.io/charts \
       --kubeconfig="$sudo_home"/.kube/config \
       --force-update \
       --debug
-    helm repo update \
+    /usr/local/bin/helm repo update \
       --kubeconfig="$sudo_home"/.kube/config \
       --debug
     echo "$yellow Listing and searching for the chart in the Falco Security repository... $reset"
-    helm repo list \
+    /usr/local/bin/helm repo list \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug \
       | grep "https://falcosecurity.github.io/charts"
-    helm search repo falcosecurity \
+    /usr/local/bin/helm search repo falcosecurity \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --debug
-     echo "$yellow Installing the Falco Security Helm chart... $reset"
-     helm install falcosecurity/falco \
+    echo "$yellow Installing the Falco Security Helm chart... $reset"
+    /usr/local/bin/helm install falcosecurity/falco \
       --kubeconfig="$sudo_home"/.kube/config \
       --output=table \
       --namespace=falcosecurity \
@@ -48,7 +48,7 @@ function install_falco(){
       --set auditLog.enabled=true \
       --set ebpf.enabled=true \
       --set falco.logLevel=debug
-     echo "$green Falco Security Helm chart installation completed... $reset"
+    echo "$green Falco Security Helm chart installation completed... $reset"
   else
     error "$red Please ensure that a Helm 3 client is located in the following path first > [ /usr/local/bin/helm ]... $reset"
     exit 1
