@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/hubvu/kubeadm-single-node/actions" alt="ShellCheck">
-    <img src="https://github.com/hubvu/kubeadm-single-node/workflows/shellcheck.yaml/badge.svg?branch=main">
+    <img src="https://github.com/hubvu/kubeadm-single-node/actions/workflows/shellcheck.yaml/badge.svg?branch=main">
   </a>
   <a href="https://github.com/hubvu/kubeadm-single-node/releases" alt="GitHub Release">
     <img src="https://img.shields.io/github/v/release/hubvu/kubeadm-single-node">
