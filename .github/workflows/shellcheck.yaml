@@ -1,4 +1,4 @@
-name: ShellCheck - Shell script static analysis tool
+name: ShellCheck
 
 # only trigger the action to the master/main branch on push and pull_request
 on:
