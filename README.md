@@ -12,7 +12,7 @@
     <img src="https://github.com/hubvu/kubeadm-single-node/actions/workflows/shellcheck.yaml/badge.svg?branch=main">
   </a>
   <a href="https://github.com/hubvu/kubeadm-single-node/releases" alt="GitHub Release">
-    <img src="https://img.shields.io/github/v/release/hubvu/kubeadm-single-node">
+    <img src="https://img.shields.io/github/v/tag/hubvu/kubeadm-single-node">
   </a>
   <a href="./LICENSE.md" alt="MIT License">
     <img src="https://img.shields.io/badge/license-MIT-green.svg">
@@ -22,9 +22,6 @@
   </a>
   <a href="https://img.shields.io/github/repo-size/hubvu/kubeadm-single-node.svg" alt="Repository Size">
     <img src="https://img.shields.io/github/repo-size/hubvu/kubeadm-single-node.svg">
-  </a>
-  <a href="https://img.shields.io/github/directory-file-count/hubvu/kubeadm-single-node.svg" alt="Repository File Count">
-    <img src="https://img.shields.io/github/directory-file-count/hubvu/kubeadm-single-node.svg">
   </a>
 </p>
 
